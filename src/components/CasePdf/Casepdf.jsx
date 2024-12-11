@@ -96,7 +96,9 @@ const renderSelectedContent = () => {
   const isAuthorFound = caseData?.data?.Judgment_Author !== "Not Found";
 
   return (
-    <div className="flex-1 flex flex-col max-h-[100vh] overflow-scroll bg-PrimaryBlack items-center py-8">
+    <div className="flex-1 flex flex-col max-h-[100vh] overflow-scroll  bg-PrimaryBlack items-center py-8" style={{
+      scrollbarWidth: "none",
+    }}>
       <h2 className="text-white">
         {caseData?.data?.Court_Name || "Loading..."}
       </h2>

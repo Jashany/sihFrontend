@@ -16,6 +16,7 @@ import NotebookPage from "./views/Notebook";
 import { Toaster } from "react-hot-toast";
 import RegisterPage from "./views/Register";
 import LoginPage from "./views/Login";
+import AuthAxios from "./utils/authaxios";
 
 const initialChats = [
   {
@@ -33,9 +34,28 @@ const initialChats = [
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation(); // Get current location
-
+  
+  const [chats, setChats] = useState();
   const [activeId, setActiveId] = useState(null);
-  const [chats, setChats] = useState(initialChats);
+
+  useEffect(() => {
+    const fetch = async () => {
+      setLoading(true);
+      const res = await AuthAxios.get("/chat/chats");
+      const data = res.data;
+      setLoading(false);
+
+      if(data.success){
+        setChats(data.data);
+      }
+      else{
+        toast.error("Failed to fetch chats");
+      }
+    };
+    fetch();
+  }, []);
+
+
 
   // Redirect to a new chat ID if user lands on "/"
   useEffect(() => {
@@ -52,7 +72,7 @@ export default function App() {
       title: `New Chat ${newChatId.substring(0, 5)}`,
       subtitle: "This is a new chat",
     };
-    setChats((prevChats) => [...prevChats, newChat]); // Add the new chat to the list
+    setChats((chats) => [...chats, newChat]); // Add the new chat to the list
     setActiveId(newChatId); // Set it as active
     navigate(`/${newChatId}`); // Navigate to the new chat route
   };
@@ -66,20 +86,25 @@ export default function App() {
     console.log("Searching:", query);
   };
 
-  console.log(location.pathname)
+  console.log(location.pathname);
   return (
     <div className="flex h-[100vh]">
       <Toaster position="top-right" reverseOrder={false} />
       <MainSideBar />
-      {!(location.pathname === "/upload" || location.pathname === "/register" || location.pathname === "/login" || location.pathname === "/login") && (
-  <Sidebar
-    chats={chats}
-    activeChatId={activeId}
-    createNewChat={createChat} // Pass createChat to Sidebar
-    onChatSelect={setActiveChatId}
-    onSearch={handleSearch}
-  />
-)}
+      {!(
+        location.pathname === "/upload" ||
+        location.pathname === "/register" ||
+        location.pathname === "/login" ||
+        location.pathname === "/login"
+      ) && (
+        <Sidebar
+          chats={chats}
+          activeChatId={activeId}
+          createNewChat={createChat} // Pass createChat to Sidebar
+          onChatSelect={setActiveChatId}
+          onSearch={handleSearch}
+        />
+      )}
 
       <Routes>
         <Route path="/:id" element={<Home />} />
