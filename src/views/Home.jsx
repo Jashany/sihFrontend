@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "../components/sidebar/sidebar";
 import { ChatArea } from "../components/chat/chat-area";
 import Casepdf from "../components/CasePdf/Casepdf";
-import { useLocation,useParams,useNavigate } from "react-router-dom";
-
+import { useLocation, useParams, useNavigate } from "react-router-dom";
+import AuthAxios from "../utils/authaxios";
+import toast from "react-hot-toast";
 
 const initialMessages = [
   {
@@ -38,9 +39,12 @@ export default function Home() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const [chats, setChats] = useState(null);
+  const [activeChat, setActiveChat] = useState(null);
+
   //param
   const { id } = useParams();
-  console.log(id)
+  console.log(id);
 
   const handleSearch = (query) => {
     console.log("Searching:", query);
@@ -60,18 +64,56 @@ export default function Home() {
 
   const handleStateChange = (newState) => {
     // navigate(`/${id}/source/${newState}`)
-    navigate(`/${id}/source/201959`)
+    navigate(`/${id}/source/201959`);
   };
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetch = async () => {
+      setLoading(true);
+      const res = await AuthAxios.get("/chat/chats");
+      const data = res.data;
+      setLoading(false);
+
+      if(data.success){
+        setChats(data.data);
+      }
+      else{
+        toast.error("Failed to fetch chats");
+      }
+    };
+    fetch();
+  }, []);
+
+  useEffect(() => {
+    const fetch = async () => {
+      setLoading(true);
+      const res = await AuthAxios.get("/chat/chats");
+      const data = res.data;
+      setLoading(false);
+
+      if(data.success){
+        setChats(data.data);
+      }
+      else{
+        toast.error("Failed to fetch chats");
+      }
+    };
+    fetch();
+  }, []);
+
+
+
 
   return (
     <div className="flex bg-PrimaryBlack text-gray-200 h-screen">
-    
-        <ChatArea
-          messages={messages}
-          create
-          onSend={handleSend}
-          handleStateChange={handleStateChange}
-        />
+      <ChatArea
+        messages={messages}
+        create
+        onSend={handleSend}
+        handleStateChange={handleStateChange}
+      />
     </div>
   );
 }

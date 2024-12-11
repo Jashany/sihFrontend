@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid"; // Import UUID
 import Home from "./views/Home";
@@ -6,7 +12,10 @@ import MainSideBar from "./components/MainSideBar/MainSideBar";
 import UploadDocument from "./views/UploadDocument";
 import Casepdf from "./components/CasePdf/Casepdf";
 import { Sidebar } from "./components/sidebar/sidebar";
-
+import NotebookPage from "./views/Notebook";
+import { Toaster } from "react-hot-toast";
+import RegisterPage from "./views/Register";
+import LoginPage from "./views/Login";
 
 const initialChats = [
   {
@@ -57,20 +66,28 @@ export default function App() {
     console.log("Searching:", query);
   };
 
+  console.log(location.pathname)
   return (
     <div className="flex h-[100vh]">
+      <Toaster position="top-right" reverseOrder={false} />
       <MainSideBar />
-      <Sidebar
-        chats={chats}
-        activeChatId={activeId}
-        createNewChat={createChat} // Pass createChat to Sidebar
-        onChatSelect={setActiveChatId}
-        onSearch={handleSearch}
-      />
+      {!(location.pathname === "/upload" || location.pathname === "/register" || location.pathname === "/login" || location.pathname === "/login") && (
+  <Sidebar
+    chats={chats}
+    activeChatId={activeId}
+    createNewChat={createChat} // Pass createChat to Sidebar
+    onChatSelect={setActiveChatId}
+    onSearch={handleSearch}
+  />
+)}
+
       <Routes>
         <Route path="/:id" element={<Home />} />
         <Route path="/:id/source/:source" element={<Casepdf />} />
         <Route path="/upload" element={<UploadDocument />} />
+        <Route path="/notebook" element={<NotebookPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
     </div>
   );
