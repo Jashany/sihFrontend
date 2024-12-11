@@ -1,6 +1,7 @@
-import { act, useState } from "react";
+import { useState } from "react";
 import { Sidebar } from "../components/uploadDocSidebar/sidebar";
 import SummarySection from "../components/uploadDocSidebar/summary-section";
+import Loader from "../components/uploadDocSidebar/loader";
 
 const initialDocs = [
   {
@@ -78,12 +79,13 @@ const UploadDocument = () => {
   const activeDoc = docs.find(doc => doc.id === activeDocId);
 
   return (
-    <div className="flex bg-PrimaryBlack text-gray-200 h-screen">
+    <div className="flex bg-PrimaryBlack text-gray-200 h-screen w-full">
       <Sidebar
         activeDocId={activeDocId}
         docs={docs}
         onDocSelect={setActiveDocId}
       />
+      {/* <Loader /> */}
       <SummarySection document={activeDoc} />
     </div>
   );
