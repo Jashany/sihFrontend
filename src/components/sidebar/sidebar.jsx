@@ -24,15 +24,19 @@ export function Sidebar({ chats, activeChatId, onChatSelect, onSearch }) {
           <img src={chat} alt="" />
           Recent Chats
         </h1>
-        { chats && chats.length>0 && chats.map((chat) => (
-          <ChatListItem
-            key={chat.id}
-            title={chat.title}
-            subtitle={chat.subtitle}
-            isActive={chat.id === activeChatId}
-            onClick={() => onChatSelect(chat.id)}
-          />
-        ))}
+        <div className="flex flex-col gap-3">
+          {chats &&
+            chats.length > 0 &&
+            chats.map((chat) => (
+              <ChatListItem
+                key={chat.id}
+                title={chat.title}
+                subtitle={chat.subtitle}
+                isActive={chat.id === activeChatId}
+                onClick={() => onChatSelect(chat.id)}
+              />
+            ))}
+        </div>
       </div>
 
       <button className="p-4 text-gray-400 hover:text-gray-200 transition-colors">
