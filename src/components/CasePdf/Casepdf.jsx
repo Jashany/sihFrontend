@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom";
 
 const Casepdf = () => {
   const [caseData, setCaseData] = useState(null);
-  const [judgmentText, setJudgmentText] = useState(""); // To store fetched judgment text
-  const [selected, setSelected] = useState(""); // Tracks which button is selected
+  const [pdfUrl, setPdfUrl] = useState(""); // To store PDF file URL
+  const [selectedSections, setSelectedSections] = useState([]); // Tracks selected sections
 
   const { source } = useParams();
 
@@ -20,66 +20,146 @@ const Casepdf = () => {
   }, [source]);
 
   useEffect(() => {
-    // Fetch judgment text if `judgement_path` is available and selected is empty
+    // Fetch the PDF file URL if `judgement_path` is available
     if (caseData?.data?.judgement_path) {
-      console.log("hello");
-      const fetchJudgmentText = async () => {
-        const response = await fetch(
-          `https://pub-d58fae2843f34cfcbf2cfb0606b5efaf.r2.dev/judgmenttxts/${source}.txt`
-        );
-        const text = await response.text();
-        // const cleanedText = text.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim(); // Remove HTML tags and extra spaces
-        setJudgmentText(text);
-      };
-      fetchJudgmentText();
+      const pdfPath = caseData.data.PDF_Path; // Assuming this field contains the PDF file path
+      console.log(pdfPath);
+      const pdfUrl = `https://pub-d58fae2843f34cfcbf2cfb0606b5efaf.r2.dev/${pdfPath}`; // Construct the URL for the R2 bucket PDF
+      setPdfUrl(pdfUrl);
     }
   }, [caseData]);
 
-  // Function to render content based on the selected state
-  const renderContent = () => {
-    if (selected === "Issues") {
-      return caseData?.Issues?.map((issue, index) => (
-        <p key={index}>{issue}</p>
-      ));
-    } else if (selected === "Facts") {
-      return caseData?.Facts?.map((fact, index) => <p key={index}>{fact}</p>);
-    } else if (selected === "Conclusions") {
-      return caseData?.Conclusions?.map((conclusion, index) => (
-        <p key={index}>{conclusion}</p>
-      ));
-    } else {
-      return (
-        <div
-        style={{
-          whiteSpace: "pre-wrap",
-          textAlign: "center", // Center the text
-        }}
-        dangerouslySetInnerHTML={{
-          __html: judgmentText.replace(/\n/g, "<br />"), // Convert newlines to <br /> tags
-        }}
-      />
-      );
-    }
+  // Toggle selection for a section
+  const handleCheckboxChange = (section) => {
+    setSelectedSections((prev) =>
+      prev.includes(section)
+        ? prev.filter((item) => item !== section)
+        : [...prev, section]
+    );
   };
 
-  return (
-    <div className="flex-1 flex flex-col h-screen">
-      <h2>{caseData?.data?.Court_Name || "Loading..."}</h2>
-      <h1>{caseData?.data?.Case_Title || "Loading..."}</h1>
-      <h3>Author: {caseData?.data?.Judgment_Author || "Loading..."}</h3>
-      <h4>Bench: {caseData?.data?.Bench || "Loading..."}</h4>
-      <h5>{caseData?.data?.Citations || "Loading..."}</h5>
+// Function to render selected content with headings
+const renderSelectedContent = () => {
+    if (selectedSections.length === 0) {
+      return null; // Do not render anything if no checkbox is selected
+    }
+  
+    let hasContent = false;
+    const contentSections = selectedSections.map((section) => {
+      let content;
+      if (section === "Issues") {
+        content = caseData?.data?.Issues?.map((issue, index) => (
+          <p key={index}>{issue}</p>
+        ));
+      } else if (section === "Facts") {
+        content = caseData?.data?.Facts?.map((fact, index) => (
+          <p key={index}>{fact}</p>
+        ));
+      } else if (section === "Conclusions") {
+        content = caseData?.data?.Conclusions?.map((conclusion, index) => (
+          <p key={index}>{conclusion}</p>
+        ));
+      }
+  
+      if (content && content.length > 0) {
+        hasContent = true;
+        return (
+          <div
+            className="bg-PrimaryGrayLight text-white p-4 rounded-md mb-4"
+            key={section}
+            style={{ marginTop: "20px" }}
+            
+          >
+            <h3 className="text-white text-xl">{section}</h3>
+            {content}
+          </div>
+        );
+      }
+      return null;
+    });
+  
+    return (
+      <>
+        {contentSections}
+        {!hasContent && selectedSections.length !=0 (
+          <p style={{ color: "white", marginTop: "20px" }}>
+            No content available for the selected sections.
+          </p>
+        )}
+      </>
+    );
+  };
+  
 
-      <div style={{ margin: "20px 0" }}>
-        <button onClick={() => setSelected("Issues")}>Issues</button>
-        <button onClick={() => setSelected("Facts")}>Facts</button>
-        <button onClick={() => setSelected("Conclusions")}>Conclusions</button>
-        <button onClick={() => setSelected("")}>Judgment</button>
+  const isCitations = caseData?.data?.Citations !== "Not Found";
+  const isBenchFound = caseData?.data?.Bench !== "Not Found";
+  const isAuthorFound = caseData?.data?.Judgment_Author !== "Not Found";
+
+  return (
+    <div className="flex-1 flex flex-col max-h-[100vh] overflow-scroll bg-PrimaryBlack items-center py-8">
+      <h2 className="text-white">
+        {caseData?.data?.Court_Name || "Loading..."}
+      </h2>
+      <h1 className="text-white my-4 text-2xl font-bold">
+        {caseData?.data?.Case_Title || "Loading..."}
+      </h1>
+      <h3 className="text-[#787878]">
+        Author: {isAuthorFound ? caseData?.data?.Judgment_Author : "Not Found"}
+      </h3>
+      <h4 className="text-[#787878]">
+        Bench: {isBenchFound ? caseData?.data?.Bench : "Not Found"}
+      </h4>
+      {isCitations && (
+        <h4 className="text-[#787878]">
+          Citations: {caseData?.data?.Citations || "Loading..."}
+        </h4>
+      )}
+
+      <div
+        className="inputCheckbox"
+        style={{ margin: "20px 0", color: "white" }}
+      >
+           {caseData?.data?.Issues.length > 0 && (
+        <label>
+          <input
+            type="checkbox"
+            checked={selectedSections.includes("Issues")}
+            onChange={() => handleCheckboxChange("Issues")}
+          />
+          Issues
+        </label>
+        )}
+        {caseData?.data?.Facts.length > 0 && (
+        <label style={{ marginLeft: "10px" }}>
+          <input
+            type="checkbox"
+            checked={selectedSections.includes("Facts")}
+            onChange={() => handleCheckboxChange("Facts")}
+          />
+          Facts
+        </label>
+        )}
+        {caseData?.data?.Conclusions.length > 0 && (
+          <label style={{ marginLeft: "10px" }}>
+            <input
+              type="checkbox"
+              checked={selectedSections.includes("Conclusions")}
+              onChange={() => handleCheckboxChange("Conclusions")}
+            />
+            Conclusions
+          </label>
+        )}
       </div>
 
-      <div style={{ marginTop: "20px" }}>
-        <h3>Content:</h3>
-        {renderContent()}
+      <div style={{ marginTop: "20px", width: "80%" }}>
+        {renderSelectedContent()}
+      </div>
+      <div style={{ height: "80vh", width: "60vw", margin: "auto" }}>
+        <iframe
+          src={pdfUrl}
+          style={{ width: "100%", minHeight: "100vh" }}
+          frameBorder="0"
+        ></iframe>
       </div>
     </div>
   );
