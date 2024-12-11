@@ -39,6 +39,7 @@ export default function Home() {
   
   const [chats, setChats] = useState(null);
   const [activeChat, setActiveChat] = useState(null);
+  const [activeId, setActiveId] = useState(null);
   
   //param
   const { id } = useParams();
@@ -120,10 +121,31 @@ export default function Home() {
     fetch();
   }, []);
 
+  const createChat = () => {
+    const newChatId = uuidv4(); // Generate a new UUID
+    const newChat = {
+      id: newChatId,
+      title: `New Chat ${newChatId.substring(0, 5)}`,
+      subtitle: "This is a new chat",
+    };
+    setChats((chats) => [...chats, newChat]); // Add the new chat to the list
+    setActiveId(newChatId); // Set it as active
+    navigate(`/${newChatId}`); // Navigate to the new chat route
+  };
 
+  
 
 
   return (
+    <>
+    
+    <Sidebar
+          chats={chats}
+          activeChatId={activeId}
+          createNewChat={createChat} // Pass createChat to Sidebar
+          onChatSelect={setActiveChatId}
+          onSearch={handleSearch}
+        />
     <div className="flex bg-PrimaryBlack text-gray-200 h-screen w-full">
 
       {
@@ -138,5 +160,6 @@ export default function Home() {
       }
       
     </div>
+      </>
   );
 }

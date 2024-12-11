@@ -17,6 +17,7 @@ import { Toaster } from "react-hot-toast";
 import RegisterPage from "./views/Register";
 import LoginPage from "./views/Login";
 import AuthAxios from "./utils/authaxios";
+import NoteBookMain from "./components/notebook/NotebookPage";
 
 const initialChats = [
   {
@@ -34,7 +35,7 @@ const initialChats = [
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation(); // Get current location
-  
+
   const [chats, setChats] = useState();
   const [activeId, setActiveId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -46,17 +47,14 @@ export default function App() {
       const data = res.data;
       setLoading(false);
 
-      if(data.success){
+      if (data.success) {
         setChats(data.data);
-      }
-      else{
+      } else {
         toast.error("Failed to fetch chats");
       }
     };
     fetch();
   }, []);
-
-
 
   // Redirect to a new chat ID if user lands on "/"
   useEffect(() => {
@@ -91,27 +89,22 @@ export default function App() {
   return (
     <div className="flex h-[100vh]">
       <Toaster position="top-right" reverseOrder={false} />
-      <MainSideBar />
       {!(
-        location.pathname === "/upload" ||
         location.pathname === "/register" ||
         location.pathname === "/login" ||
-        location.pathname === "/login"
-      ) && (
-        <Sidebar
-          chats={chats}
-          activeChatId={activeId}
-          createNewChat={createChat} // Pass createChat to Sidebar
-          onChatSelect={setActiveChatId}
-          onSearch={handleSearch}
-        />
-      )}
+        location.pathname === "/login/" ||
+        location.pathname === "/register/" ||
+        location.pathname === "/register"
+      ) && <MainSideBar />}
+
+  
 
       <Routes>
         <Route path="/:id" element={<Home />} />
         <Route path="/:id/source/:source" element={<Casepdf />} />
         <Route path="/upload" element={<UploadDocument />} />
         <Route path="/notebook" element={<NotebookPage />} />
+        <Route path="/notebook/:id" element={<NoteBookMain />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>

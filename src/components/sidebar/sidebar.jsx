@@ -10,6 +10,8 @@ export function Sidebar({
   onSearch,
   createNewChat,
 }) {
+
+  console.log(chats);
   return (
     <div className="w-80 bg-PrimaryGrayDark h-screen flex flex-col">
       <div className="p-4">
@@ -35,14 +37,14 @@ export function Sidebar({
         </h1>
         <div className="flex flex-col gap-3">
           {chats &&
-            chats.length > 0 &&
+            chats?.length > 0 &&
             chats.map((chat) => (
               <ChatListItem
-                key={chat.id}
-                title={chat.chatHistory[0].user || "New Chat..."}
-                subtitle={chat.chatHistory[1].ai.text || "New chat..."}
-                isActive={chat.id === activeChatId}
-                onClick={() => onChatSelect(chat.id)}
+                key={chat?._id}
+                title={chat?.chatHistory[0]?.user || "New Chat..."}
+                subtitle={chat?.chatHistory[1]?.ai?.text || "New chat..."}
+                isActive={chat?.id === activeChatId}
+                onClick={() => onChatSelect(chat.chatId)}
               />
             ))}
 
