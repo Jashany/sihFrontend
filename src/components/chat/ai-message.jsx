@@ -9,7 +9,7 @@ import logo from "../../assets/svgs/logo.svg";
     >
       <div className="max-w-6xl flex ">
         <div className="mt-2.5 mr-1">
-          <img src={logo} alt="logo" width={69} />
+          <img src={logo} alt="logo" width={32} />
         </div>
         <div className="flex space-x-3 justify-start items-center">
           <div>
@@ -17,7 +17,7 @@ import logo from "../../assets/svgs/logo.svg";
               {sources && (
                 <h1 className="text-PrimaryGrayTextDark">LawVista AI</h1>
               )}
-              <p className="text-gray-200 whitespace-pre-wrap">{content}</p>
+              <p className="text-gray-200 whitespace-pre-wrap min-w-3xl">{content}</p>
             </div>
 
             {sources && sources.length > 0 && (
@@ -27,7 +27,7 @@ import logo from "../../assets/svgs/logo.svg";
                   {sources.map((source, index) => (
                     <div
                       key={index}
-                      className="bg-PrimaryGrayLight rounded-xl p-3 flex justify-between items-center"
+                      className="bg-PrimaryGrayLight rounded-xl min-w-5xl p-3 flex justify-between items-center gap-4"
                     >
                       <div>
                         <h5 className="text-gray-200">{source.title}</h5>

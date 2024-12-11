@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "../components/uploadDocSidebar/sidebar";
 import SummarySection from "../components/uploadDocSidebar/summary-section";
 import Loader from "../components/uploadDocSidebar/loader";
+import { v4 as uuidv4 } from "uuid";
+import AuthAxios from "../utils/authaxios";
+import { useParams } from "react-router-dom";
 
 const initialDocs = [
   {
@@ -73,13 +76,12 @@ const initialDocs = [
 ];
 
 const UploadDocument = () => {
-  const [activeDocId, setActiveDocId] = useState(1);
-  const [docs, setDocs] = useState(initialDocs);
+  const [activeDocId, setActiveDocId] = useState(null);
+  const [docs, setDocs] = useState([]); // Start with an empty document list
   const [loading, setLoading] = useState(false);
   const [loadingStageTime, setLoadingStageTime] = useState(1000); // Default time for the last stage
   const [summary, setSummary] = useState("");
-
-  const activeDoc = docs.find((doc) => doc.id === activeDocId);
+  const [activeDoc, setActiveDoc] = useState(null);
 
   const CallSummarizeApi = async (text) => {
     setLoading(true);
@@ -100,18 +102,99 @@ const UploadDocument = () => {
           duration: Date.now() - startTime, // Calculate duration
         }));
       })
-      .then(({ data, duration }) => {
+      .then(async ({ data, duration }) => {
         setLoading(false);
 
         // Add 1 second to the API duration for smoother transition
         setLoadingStageTime(duration + 1000);
-        setSummary(data?.summary_text);
+
+        const generatedSummary = data?.summary_text || "";
+        setSummary(generatedSummary);
+
+        // Extract a few words from the summary for the title
+        const titleSnippet =
+          generatedSummary.split(" ").slice(0, 5).join(" ") + "...";
+
+        // Add the new document to the list
+        const newDoc = {
+          // Generate a new ID
+          id: uuidv4(),
+          title: titleSnippet || "Untitled Document",
+        };
+        setDocs((prevDocs) => [...prevDocs, newDoc]);
+
+        // Automatically set the new document as active
+        setActiveDocId(newDoc.id);
+
+        // Make an API call to the backend with the new document details
+
+        await AuthAxios
+          .post("http://localhost:3000/api/doc/", {
+            documentId: newDoc.id,
+            title: newDoc.title,
+            summary: generatedSummary,
+          })
+          .then((response) => {
+            const backendResponse = response.data; // Access the response data
+            if (backendResponse.success) {
+              console.log("Summary saved successfully");
+            } else {
+              console.error("Failed to save summary:", backendResponse.error);
+            }
+          })
+          .catch((error) => {
+            console.error(
+              "Error while saving summary to backend:",
+              error.message
+            );
+          });
       })
       .catch((error) => {
         setLoading(false);
         console.error("Error:", error);
       });
   };
+
+  const fetchDocs = async () => {
+    setLoading(true);
+    try {
+      const res = await AuthAxios.get("/doc");
+      const data = res.data;
+      if (data.success) {
+        setDocs(data.data);
+      } else {
+        console.error("Failed to fetch documents");
+      }
+    } catch (err) {
+      console.error("An error occurred while fetching documents:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+  const { id } = useParams();
+
+
+  useEffect(()=>{
+    fetchDocs();
+  },[])
+
+  useEffect(()=>{
+    if(id){
+      setActiveDocId(id);
+
+      const fetchDoc = async () => {
+        const res = await AuthAxios.get(`/doc/${id}`);
+        const data = res.data;
+        if (data.success) {
+          setActiveDoc(data.data);
+          setSummary(data.data.summary);
+        } else {
+          console.error("Failed to fetch document");
+        }
+      }
+      fetchDoc()
+    }
+  },[id])
 
   return (
     <div className="flex bg-PrimaryBlack text-gray-200 h-screen w-full">
@@ -121,20 +204,16 @@ const UploadDocument = () => {
         onDocSelect={setActiveDocId}
         handlePdfText={CallSummarizeApi}
       />
-      {loading && 
-        <Loader loadingStageTime={loadingStageTime} />
-      }
-      {
-        !loading && summary && 
+
+      {loading && <Loader loadingStageTime={loadingStageTime} />}
+      {!loading && summary && (
         <div>
-          <h3>
-            Summary
-          </h3>
-        <p className="p-2 bg-PrimaryGrayLight text-white h-fit w-[80%] m-5 rounded-md">
-          {summary}
-        </p>
+          <h3 className="text-5xl font-extrabold pl-6 pt-8 ">Summary</h3>
+          <p className="p-2 bg-PrimaryGrayLight text-white h-fit w-[80%] m-5 rounded-md px-4 pt-4 ">
+            {summary}
+          </p>
         </div>
-      }
+      )}
     </div>
   );
 };

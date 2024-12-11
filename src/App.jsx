@@ -115,6 +115,7 @@ export default function App() {
         <Route path="/:id" element={<Home />} />
         <Route path="/:id/source/:source" element={<Casepdf />} />
         <Route path="/upload" element={<UploadDocument />} />
+        <Route path="/upload/:id" element={<UploadDocument />} />
         <Route path="/notebook" element={<NotebookPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />

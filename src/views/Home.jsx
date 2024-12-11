@@ -61,13 +61,16 @@ export default function Home() {
         setMessages(data.data.chatHistory);
       } else {
         toast.error("Failed to send message");
+        setMessages((prev) => prev?.slice(0, -1)); // Remove optimistic message
       }
     } catch (err) {
       toast.error("An error occurred while sending the message");
+      setMessages((prev) => prev?.slice(0, -1)); // Remove optimistic message
     } finally {
       setLoading(false);
     }
   };
+  
 
   // Fetch Chat Details
   const fetchActiveChat = async (chatId) => {
@@ -123,13 +126,14 @@ export default function Home() {
     <div className="flex bg-PrimaryBlack text-gray-200 h-screen w-full">
       {activeChat && (
         <ChatArea
-          messages={activeChat.chatHistory}
-          create
-          onSend={handleSend}
-          handleStateChange={(newState) =>
-            navigate(`/${id}/source/${newState}`)
-          }
-        />
+        messages={messages} // Use messages state here
+        create
+        onSend={handleSend}
+        handleStateChange={(newState) =>
+          navigate(`/${id}/source/${newState}`)
+        }
+      />
+      
       )}
 
       {loading && (

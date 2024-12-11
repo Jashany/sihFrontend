@@ -10,6 +10,7 @@ export function Sidebar({
   onSearch,
   createNewChat,
 }) {
+  console.log(chats);
   return (
     <div className="w-80 bg-PrimaryGrayDark h-screen flex flex-col">
       <div className="p-4">
@@ -36,15 +37,21 @@ export function Sidebar({
         <div className="flex flex-col gap-3">
           {chats &&
             chats.length > 0 &&
-            chats.map((chat) => (
-              <ChatListItem
-                key={chat.chatId}
-                title={ "New Chat..."}
-                subtitle={"Ask your query..."}
-                isActive={chat.chatId === activeChatId}
-                onClick={() => onChatSelect(chat.chatId)}
-              />
-            ))}
+            chats.map((chat) => {
+              const firstMessage = chat.chatHistory?.[0]?.user || "New Chat...";
+              const secondMessage =
+                chat.chatHistory?.[1]?.ai?.text || "Start a new chat";
+
+              return (
+                <ChatListItem
+                  key={chat.chatId}
+                  title={firstMessage}
+                  subtitle={secondMessage}
+                  isActive={chat.chatId === activeChatId}
+                  onClick={() => onChatSelect(chat.chatId)}
+                />
+              );
+            })}
 
           {!chats && (
             <div className="text-PrimaryGrayTextLight">No Chats Found</div>

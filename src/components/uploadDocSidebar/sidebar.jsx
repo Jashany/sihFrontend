@@ -1,10 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import upload from "../../assets/svgs/upload.svg";
 import UploadButton from "./blueButton";
 import DocumentListItem from "./upload-doc-list-item";
 
-export function Sidebar({ activeDocId, docs, onDocSelect,handlePdfText }) {
-
-
+export function Sidebar({ activeDocId, docs, onDocSelect, handlePdfText }) {
+  const navigate = useNavigate();
 
   return (
     <div className="w-96 bg-PrimaryGrayDark h-screen flex flex-col">
@@ -15,7 +15,11 @@ export function Sidebar({ activeDocId, docs, onDocSelect,handlePdfText }) {
       </div>
 
       <div className="p-4">
-        <UploadButton name="Upload Document" svg={upload} handleText={handlePdfText} />
+        <UploadButton
+          name="Upload Document"
+          svg={upload}
+          handleText={handlePdfText}
+        />
       </div>
 
       <div className="flex-1 overflow-y-auto pl-5 pt-3">
@@ -23,10 +27,13 @@ export function Sidebar({ activeDocId, docs, onDocSelect,handlePdfText }) {
           docs.length > 0 &&
           docs.map((doc) => (
             <DocumentListItem
-              key={doc.id}
-              title={doc.title}
-              isActive={doc.id === activeDocId}
-              onClick={() => onDocSelect(doc.id)}
+              key={doc.documentId}
+              title={doc.summary}
+              isActive={doc.documentId === activeDocId}
+              onClick={() => {
+                navigate(`/upload/${doc.documentId}`);
+                onDocSelect(doc.documentId);
+              }}
             />
           ))}
       </div>
