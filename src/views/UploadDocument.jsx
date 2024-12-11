@@ -4,16 +4,20 @@ import SummarySection from "../components/uploadDocSidebar/summary-section";
 import Loader from "../components/uploadDocSidebar/loader";
 import { v4 as uuidv4 } from "uuid";
 import AuthAxios from "../utils/authaxios";
-import { useParams } from "react-router-dom";
-
+import { useNavigate, useParams } from "react-router-dom";
+import chatTriangler from "../assets/svgs/chat-triangle.svg";
 
 const UploadDocument = () => {
-  const [activeDocId, setActiveDocId] = useState(null);
+  const { id } = useParams();
+  const [activeDocId, setActiveDocId] = useState(id);
   const [docs, setDocs] = useState([]); // Start with an empty document list
   const [loading, setLoading] = useState(false);
   const [loadingStageTime, setLoadingStageTime] = useState(1000); // Default time for the last stage
   const [summary, setSummary] = useState("");
+  const [paths, setPaths] = useState([]);
   const [activeDoc, setActiveDoc] = useState(null);
+
+  const navigate = useNavigate();
 
   const CallSummarizeApi = async (text) => {
     setLoading(true);
@@ -42,7 +46,7 @@ const UploadDocument = () => {
 
         const generatedSummary = data?.summary_text || "";
         setSummary(generatedSummary);
-
+        setPaths(data?.paths || []);
         // Extract a few words from the summary for the title
         const titleSnippet =
           generatedSummary.split(" ").slice(0, 5).join(" ") + "...";
@@ -60,12 +64,12 @@ const UploadDocument = () => {
 
         // Make an API call to the backend with the new document details
 
-        await AuthAxios
-          .post("http://localhost:3000/api/doc/", {
-            documentId: newDoc.id,
-            title: newDoc.title,
-            summary: generatedSummary,
-          })
+        await AuthAxios.post("http://localhost:3000/api/doc/", {
+          documentId: newDoc.id,
+          title: newDoc.title,
+          summary: generatedSummary,
+          paths: data?.paths || [],
+        })
           .then((response) => {
             const backendResponse = response.data; // Access the response data
             if (backendResponse.success) {
@@ -94,7 +98,14 @@ const UploadDocument = () => {
       const data = res.data;
       if (data.success) {
         setDocs(data.data);
-      } else {1
+        if (data.data.length > 0) {
+          // Automatically set the first document as active
+          const firstDoc = data.data[0];
+          setActiveDocId(firstDoc.id);
+          setSummary(firstDoc.summary || "");
+          setPaths(firstDoc.paths || []);
+        }
+      } else {
         console.error("Failed to fetch documents");
       }
     } catch (err) {
@@ -102,52 +113,96 @@ const UploadDocument = () => {
     } finally {
       setLoading(false);
     }
-  }
-  const { id } = useParams();
+  };
+  
 
-
-  useEffect(()=>{
-    fetchDocs();
-  },[])
-
-  useEffect(()=>{
-    if(id){
-      setActiveDocId(id);
-
-      const fetchDoc = async () => {
-        const res = await AuthAxios.get(`/doc/${id}`);
-        const data = res.data;
-        if (data.success) {
-          setActiveDoc(data.data);
-          setSummary(data.data.summary);
-        } else {
-          console.error("Failed to fetch document");
+  useEffect(() => {
+    fetchDocs(); // Automatically fetches and sets the first document as active
+  }, []);
+  
+  useEffect(() => {
+    if (activeDocId) {
+      const fetchActiveDoc = async () => {
+        setLoading(true);
+        try {
+          const res = await AuthAxios.get(`/doc/${activeDocId}`);
+          const data = res.data;
+          if (data.success) {
+            setSummary(data.data.summary || "");
+            setPaths(data.data.paths || []);
+          } else {
+            console.error("Failed to fetch the active document");
+          }
+        } catch (err) {
+          console.error("Error while fetching the active document:", err);
+        } finally {
+          setLoading(false);
         }
-      }
-      fetchDoc()
+      };
+  
+      fetchActiveDoc();
     }
-  },[id])
+  }, [activeDocId]);
 
   return (
-    <div className="flex bg-PrimaryBlack text-gray-200 h-screen w-full">
+    <div className=" bg-PrimaryBlack text-gray-200 min-h-screen w-full flex justify-center   ">
+      <div className="min-h-screen">
+
       <Sidebar
         activeDocId={activeDocId}
         docs={docs}
-        onDocSelect={setActiveDocId}
+        onDocSelect={(docId) => setActiveDocId(docId)} // Pass the selected document ID
         handlePdfText={CallSummarizeApi}
-      />
+        />
+        </div>
 
       {loading && <Loader loadingStageTime={loadingStageTime} />}
-      {!loading && summary && (
-        <div>
-          <h3 className="ml-5 mt-5 text-2xl">
-            Summary
-          </h3>
-        <p className="p-2 bg-PrimaryGrayLight text-white h-fit w-[80%] m-5 rounded-md">
-          {summary}
-        </p>
-        </div>
-      )}
+
+      <div className="flex-1 gap-4  p-10 bg-PrimaryBlack max-h-[100vh] overflow-y-scroll">
+        {!loading && summary && (
+          <div className="">
+            <h3 className="ml-5 mt-5 text-5xl font-extrabold ">Summary</h3>
+            <p className="p-4 bg-PrimaryGrayLight text-white h-fit w-[80%] m-5 rounded-md">
+              {summary}
+            </p>
+          </div>
+        )}
+
+        {paths && paths.length > 0 && (
+          <div className="mt-4 pl-4">
+            <h4 className="text-gray-400 text-sm mb-2">Sources</h4>
+            <div className="space-y-2">
+              {paths.map((path, index) => (
+                <div
+                  key={index}
+                  className="bg-PrimaryGrayLight rounded-xl p-3 flex justify-between items-center"
+                  onClick={() => stateChange(path)}
+                >
+                  <div>
+                    <h5 className="text-gray-200">{path}</h5>
+                    <p className="text-PrimaryGrayTextDark text-sm">{path}</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const pathname = path.split(".")[0];
+                      navigate(`/files/source/${pathname}`);
+                    }}
+                    className="px-5 py-2 text-sm bg-PrimaryGrayLighter text-gray-200 rounded-xl hover:bg-PrimaryGrayDark/30 transition-colors flex justify-center items-center space-x-1 gap-2 "
+                  >
+                    <img
+                      src={chatTriangler}
+                      alt="chat"
+                      width={15}
+                      height={10}
+                    />
+                    View Document
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

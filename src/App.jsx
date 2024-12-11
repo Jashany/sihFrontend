@@ -92,7 +92,7 @@ export default function App() {
 
   console.log(location.pathname);
   return (
-    <div className="flex h-[100vh]">
+    <div className="flex h-[100vh] bg-PrimaryBlack  ">
       <Toaster position="top-right" reverseOrder={false} />
       {!(
         location.pathname === "/register" || location.pathname === "/login"
