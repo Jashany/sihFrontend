@@ -15,9 +15,12 @@ import { Sidebar } from "./components/sidebar/sidebar";
 import NotebookPage from "./views/Notebook";
 import { Toaster } from "react-hot-toast";
 import RegisterPage from "./views/Register";
+import Draggable from "react-draggable";
 import LoginPage from "./views/Login";
 import AuthAxios from "./utils/authaxios";
 import NoteBookMain from "./components/notebook/NotebookPage";
+import { Pencil } from "lucide-react";
+import NotebookWriter from "./components/notebook/NoteBookWriter";
 
 const initialChats = [
   {
@@ -35,7 +38,8 @@ const initialChats = [
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation(); // Get current location
-
+  const [position, setPosition] = useState({ x: 50, y: 50 });
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [chats, setChats] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -92,25 +96,30 @@ export default function App() {
 
   console.log(location.pathname);
   return (
-    <div className="flex h-[100vh]">
+    <div className="flex h-[100vh] w-[100vw]">
       <Toaster position="top-right" reverseOrder={false} />
+
       {!(
         location.pathname === "/register" || location.pathname === "/login"
       ) && <MainSideBar />}
-     
 
-  
-
-      <Routes>
-        <Route path="/:id" element={<Home />} />
-        <Route path="/:id/source/:source" element={<Casepdf />} />
-        <Route path="/upload" element={<UploadDocument />} />
-        <Route path="/upload/:id" element={<UploadDocument />} />
-        <Route path="/notebook" element={<NotebookPage />} />
-        <Route path="/notebook/:id" element={<NoteBookMain />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
-      </Routes>
+      <div className="flex w-full">
+        <div className="w-full flex">
+          <Routes>
+            <Route path="/:id" element={<Home />} />
+            <Route path="/:id/source/:source" element={<Casepdf />} />
+            <Route path="/upload" element={<UploadDocument />} />
+            <Route path="/upload/:id" element={<UploadDocument />} />
+            <Route path="/notebook" element={<NotebookPage />} />
+            <Route path="/notebook/:id" element={<NoteBookMain />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={<LoginPage />} />
+          </Routes>
+        </div>
+        {!(
+          location.pathname === "/register" || location.pathname === "/login"
+        ) && <NotebookWriter />}
+      </div>
     </div>
   );
 }

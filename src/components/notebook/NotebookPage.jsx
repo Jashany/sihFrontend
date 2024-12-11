@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Sidebar } from "../notebooksidebar/notebooksidebar";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import debounce from "lodash.debounce";
 
 const NoteBookMain = () => {
@@ -27,6 +27,8 @@ const NoteBookMain = () => {
 
     fetchNotebook();
   }, [id]);
+
+  const navigate = useNavigate();
 
   // Debounced save function
   const saveTitle = useCallback(
@@ -81,14 +83,20 @@ const NoteBookMain = () => {
           {isSaving ? "Saving..." : savedText}
         </div>
         <div>
-        {data?.segments && data?.segments > 0 ? (
+        {data?.segments && data?.segments?.length > 0 ? (
             <div>
-            {data.segments.map((segment) => (
+            {data?.segments?.map((segment) => (
               <div key={segment.id} className="bg-PrimaryGrayDark p-4">
-                <h1 className="text-lg text-gray-200 font-semibold">
-                  {segment.title}
-                </h1>
-                <p className="text-gray-400">{segment.content}</p>
+                <pre className="text-lg text-gray-200 font-semibold">
+                  {segment.notes}
+                </pre>
+                {segment.link && (
+                   <p onClick={()=>{
+                     navigate(segment.link);
+                   }}>
+                    View Analysis
+                   </p>
+                )}
               </div>
             ))}
           </div>

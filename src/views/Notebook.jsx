@@ -14,9 +14,13 @@ const NotebookPage = () => {
     navigate(`/notebook/${id}`);
   }
 
+  const SetActiveNotebooks = (notebook) => {
+    setNotebooks(notebook);
+  }
+
   return (
     <div className="flex bg-PrimaryBlack text-gray-200 h-screen">
-      <Sidebar activeNotebookId={1} onNotebookSelect={onNotebookSelect} notebooks={notebooks} /> 
+      <Sidebar activeNotebookId={setActiveNotebookId} onNotebookSelect={onNotebookSelect} notebooks={notebooks} /> 
         
     </div>
   );

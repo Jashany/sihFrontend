@@ -12,9 +12,10 @@ export default {
         PrimaryGrayTextDark: "#9E9E9E",
         PrimaryBlue: "#509FFF",
         PrimaryGrayHover: "#2E2E2E",
-        PrimaryGrayIcons: "#676767"
+        PrimaryGrayIcons: "#676767",
+        PrimaryLight: '#ffffff',
       },
     },
   },
-  plugins: [require('tailwind-scrollbar')],
+  plugins: [],
 };

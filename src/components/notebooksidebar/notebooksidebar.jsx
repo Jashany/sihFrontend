@@ -28,6 +28,8 @@ export function Sidebar({ activeNotebookId, notebooks, onNotebookSelect }) {
       .then((response) => response.json())
       .then((data) => {
         setNotebooks([...notebooks, data.data]);
+        console.log(data.data);
+       
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -50,6 +52,9 @@ export function Sidebar({ activeNotebookId, notebooks, onNotebookSelect }) {
       .then((data) => {
         console.log(data.data);
         setNotebooks(data.data);
+        if(data.data.length > 0 && !id)
+          navigate(data.data[0].notebookId);
+        
       })
       .catch((error) => {
         console.error("Error:", error);
