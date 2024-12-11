@@ -40,10 +40,10 @@ export function Sidebar({
             chats?.length > 0 &&
             chats.map((chat) => (
               <ChatListItem
-                key={chat?._id}
-                title={chat?.chatHistory[0]?.user || "New Chat..."}
-                subtitle={chat?.chatHistory[1]?.ai?.text || "New chat..."}
-                isActive={chat?.id === activeChatId}
+                key={chat.chatId}
+                title={ "New Chat..."}
+                subtitle={"Ask your query..."}
+                isActive={chat.chatId === activeChatId}
                 onClick={() => onChatSelect(chat.chatId)}
               />
             ))}

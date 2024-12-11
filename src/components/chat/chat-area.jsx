@@ -3,7 +3,7 @@ import { UserMessage } from "./user-message";
 
 
 import chatTriangler from "../../assets/svgs/chat-triangle.svg";
-import logo from "../../assets/svgs/logo.svg";
+import logo from "../../assets/logoSih.svg";
 
 
 export function ChatArea({ messages, onSend ,handleStateChange}) {
@@ -40,7 +40,7 @@ export function ChatArea({ messages, onSend ,handleStateChange}) {
     >
       <div className="max-w-6xl flex ">
         <div className="mt-2.5 mr-1">
-          <img src={logo} alt="logo" width={69} />
+          <img src={logo} alt="logo" width={120} />
         </div>
         <div className="flex space-x-3 justify-start items-center">
           <div>
