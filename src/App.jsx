@@ -16,6 +16,7 @@ import NotebookPage from "./views/Notebook";
 import { Toaster } from "react-hot-toast";
 import RegisterPage from "./views/Register";
 import LoginPage from "./views/Login";
+import MainHome from "./views/MainHome";
 import AuthAxios from "./utils/authaxios";
 import NoteBookMain from "./components/notebook/NotebookPage";
 
@@ -92,7 +93,7 @@ export default function App() {
 
   console.log(location.pathname);
   return (
-    <div className="flex h-[100vh] bg-PrimaryBlack  ">
+    <div className={`${location.pathname === "/landing" ? " " : "flex flex-1 h-[100vh] bg-PrimaryBlack "}`}>
       <Toaster position="top-right" reverseOrder={false} />
       {!(
         location.pathname === "/landing" ||
