@@ -15,6 +15,9 @@ export default {
         PrimaryGrayIcons: "#676767"
       },
     },
+    fontFamily: {
+      sans: ['Urbanist', 'sans-serif']
+    }
   },
   plugins: [],
 };

@@ -17,6 +17,7 @@ import { Toaster } from "react-hot-toast";
 import RegisterPage from "./views/Register";
 import LoginPage from "./views/Login";
 import AuthAxios from "./utils/authaxios";
+import MainHome from "./views/MainHome";
 
 const initialChats = [
   {
@@ -91,12 +92,14 @@ export default function App() {
 
   console.log(location.pathname);
   return (
-    <div className="flex h-[100vh]">
+    <div className={location.pathname === "/landing" ? "" : "flex h-[100vh]"}>
       <Toaster position="top-right" reverseOrder={false} />
       {!(
+        location.pathname === "/landing" ||
         location.pathname === "/register" || location.pathname === "/login"
       ) && <MainSideBar />}
       {!(
+        location.pathname === "/landing" ||
         location.pathname === "/upload" ||
         location.pathname === "/register" ||
         location.pathname === "/login" ||
@@ -112,6 +115,7 @@ export default function App() {
       )}
 
       <Routes>
+        <Route path="/landing" element={<MainHome />} />
         <Route path="/:id" element={<Home />} />
         <Route path="/:id/source/:source" element={<Casepdf />} />
         <Route path="/upload" element={<UploadDocument />} />
