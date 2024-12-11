@@ -1,0 +1,55 @@
+import { SearchBar } from "./search-bar";
+import { ChatListItem } from "./chat-list-item";
+import penchat from "../../assets/svgs/pen-chat.svg";
+import chat from "../../assets/svgs/chatgray.svg";
+
+export function Sidebar({ chats, activeChatId, onChatSelect, onSearch }) {
+  return (
+    <div className="w-80 bg-PrimaryGrayDark h-screen flex flex-col">
+      <div className="p-4">
+        <div className="flex items-center space-x-2">
+          <h1 className="text-gray-200 font-semibold">Chats</h1>
+        </div>
+      </div>
+
+      <div className="flex items-center  ">
+        <SearchBar onSearch={onSearch} />
+        <button className="bg-PrimaryBlue p-2.5 mr-3 rounded-lg">
+          <img src={penchat} alt="chat" width={18} height={10} />
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto pl-5 pt-3  ">
+        <h1 className="text-[#676767] flex gap-1 pb-2">
+          <img src={chat} alt="" />
+          Recent Chats
+        </h1>
+        { chats && chats.length>0 && chats.map((chat) => (
+          <ChatListItem
+            key={chat.id}
+            title={chat.title}
+            subtitle={chat.subtitle}
+            isActive={chat.id === activeChatId}
+            onClick={() => onChatSelect(chat.id)}
+          />
+        ))}
+      </div>
+
+      <button className="p-4 text-gray-400 hover:text-gray-200 transition-colors">
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+          />
+        </svg>
+      </button>
+    </div>
+  );
+}
