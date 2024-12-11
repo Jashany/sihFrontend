@@ -37,6 +37,7 @@ export default function App() {
   
   const [chats, setChats] = useState();
   const [activeId, setActiveId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
