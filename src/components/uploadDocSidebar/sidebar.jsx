@@ -4,7 +4,7 @@ import DocumentListItem from "./upload-doc-list-item";
 
 export function Sidebar({ activeDocId, docs, onDocSelect }) {
   return (
-    <div className="w-80 bg-PrimaryGrayDark h-screen flex flex-col">
+    <div className="w-96 bg-PrimaryGrayDark h-screen flex flex-col">
       <div className="p-4">
         <div className="flex items-center space-x-2">
           <h1 className="text-gray-200 font-semibold">Your Documents</h1>
