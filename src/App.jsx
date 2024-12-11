@@ -34,7 +34,7 @@ const initialChats = [
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation(); // Get current location
-  
+
   const [chats, setChats] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -46,17 +46,14 @@ export default function App() {
       const data = res.data;
       setLoading(false);
 
-      if(data.success){
+      if (data.success) {
         setChats(data.data);
-      }
-      else{
+      } else {
         toast.error("Failed to fetch chats");
       }
     };
     fetch();
   }, []);
-
-
 
   // Redirect to a new chat ID if user lands on "/"
   useEffect(() => {
@@ -73,16 +70,15 @@ export default function App() {
       title: `New Chat ${newChatId.substring(0, 5)}`,
       subtitle: "This is a new chat",
     };
-  
+
     setChats((prevChats) => {
       const updatedChats = [...prevChats, newChat];
       return updatedChats;
     });
-  
+
     setActiveId(newChatId); // Set it as active
     navigate(`/${newChatId}`); // Navigate to the new chat route
   };
-  
 
   const setActiveChatId = (id) => {
     setActiveId(id);
@@ -97,7 +93,9 @@ export default function App() {
   return (
     <div className="flex h-[100vh]">
       <Toaster position="top-right" reverseOrder={false} />
-      <MainSideBar />
+      {!(
+        location.pathname === "/register" || location.pathname === "/login"
+      ) && <MainSideBar />}
       {!(
         location.pathname === "/upload" ||
         location.pathname === "/register" ||
