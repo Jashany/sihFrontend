@@ -3,7 +3,13 @@ import { ChatListItem } from "./chat-list-item";
 import penchat from "../../assets/svgs/pen-chat.svg";
 import chat from "../../assets/svgs/chatgray.svg";
 
-export function Sidebar({ chats, activeChatId, onChatSelect, onSearch,createNewChat }) {
+export function Sidebar({
+  chats,
+  activeChatId,
+  onChatSelect,
+  onSearch,
+  createNewChat,
+}) {
   return (
     <div className="w-80 bg-PrimaryGrayDark h-screen flex flex-col">
       <div className="p-4">
@@ -14,7 +20,10 @@ export function Sidebar({ chats, activeChatId, onChatSelect, onSearch,createNewC
 
       <div className="flex items-center  ">
         <SearchBar onSearch={onSearch} />
-        <button className="bg-PrimaryBlue p-2.5 mr-3 rounded-lg" onClick={createNewChat}>
+        <button
+          className="bg-PrimaryBlue p-2.5 mr-3 rounded-lg"
+          onClick={createNewChat}
+        >
           <img src={penchat} alt="chat" width={18} height={10} />
         </button>
       </div>
@@ -30,12 +39,16 @@ export function Sidebar({ chats, activeChatId, onChatSelect, onSearch,createNewC
             chats.map((chat) => (
               <ChatListItem
                 key={chat.id}
-                title={chat.title}
-                subtitle={chat.subtitle}
+                title={chat.chatHistory[0].user || "New Chat..."}
+                subtitle={chat.chatHistory[1].ai.text || "New chat..."}
                 isActive={chat.id === activeChatId}
                 onClick={() => onChatSelect(chat.id)}
               />
             ))}
+
+          {!chats && (
+            <div className="text-PrimaryGrayTextLight">No Chats Found</div>
+          )}
         </div>
       </div>
 

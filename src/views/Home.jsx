@@ -33,33 +33,49 @@ Imagine a vast, bustling library, a place filled not just with books, but with w
 ];
 
 export default function Home() {
-  const [activeChatId, setActiveChatId] = useState("1");
-  const [messages, setMessages] = useState(initialMessages);
   const [showSource, setShowSource] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
-
+  
   const [chats, setChats] = useState(null);
   const [activeChat, setActiveChat] = useState(null);
-
+  
   //param
   const { id } = useParams();
   console.log(id);
+  const [activeChatId, setActiveChatId] = useState(id);
 
+  const [messages, setMessages] = useState(null);
+  
   const handleSearch = (query) => {
     console.log("Searching:", query);
   };
 
-  const handleSend = (message) => {
+  const handleSend = async (message) => {
     const newMessage = {
       id: String(messages.length + 1),
       isUser: true,
       content: message,
-      user: {
-        image: undefined,
-      },
+      user: message
     };
     setMessages([...messages, newMessage]);
+    setLoading(true);
+    const res = await AuthAxios.post("/chat/update-chat/"+activeChatId, {
+      userMessage: message
+    })
+    setLoading(false);
+    
+    const data = res.data;
+    if(data.success){
+      console.log("Message sent successfully");
+      setActiveChat(data.data);
+      setMessages(data.data.chatHistory);
+    }
+    else{
+      toast.error("Failed to send message");
+    }
+
+
   };
 
   const handleStateChange = (newState) => {
@@ -72,12 +88,13 @@ export default function Home() {
   useEffect(() => {
     const fetch = async () => {
       setLoading(true);
-      const res = await AuthAxios.get("/chat/chats");
+      const res = await AuthAxios.get("/chat/"+activeChatId);
       const data = res.data;
       setLoading(false);
 
       if(data.success){
-        setChats(data.data);
+        setActiveChat(data.data);
+        setMessages(data.data.chatHistory); 
       }
       else{
         toast.error("Failed to fetch chats");
@@ -89,7 +106,7 @@ export default function Home() {
   useEffect(() => {
     const fetch = async () => {
       setLoading(true);
-      const res = await AuthAxios.get("/chat/chats");
+      const res = await AuthAxios.get("/chat");
       const data = res.data;
       setLoading(false);
 
@@ -107,13 +124,19 @@ export default function Home() {
 
 
   return (
-    <div className="flex bg-PrimaryBlack text-gray-200 h-screen">
-      <ChatArea
-        messages={messages}
-        create
-        onSend={handleSend}
-        handleStateChange={handleStateChange}
-      />
+    <div className="flex bg-PrimaryBlack text-gray-200 h-screen w-full">
+
+      {
+        activeChat && (
+          <ChatArea
+          messages={activeChat.chatHistory}
+          create
+          onSend={handleSend}
+          handleStateChange={handleStateChange}
+        />
+        )
+      }
+      
     </div>
   );
 }

@@ -8,17 +8,17 @@ import logo from "../../assets/svgs/logo.svg";
 
 export function ChatArea({ messages, onSend ,handleStateChange}) {
   return (
-    <div className="flex-1 flex flex-col h-screen">
+    <div className="flex-1 flex flex-col h-screen ">
       <div className="flex-1 overflow-y-auto p-7 space-y-6">
         {messages &&
           messages.length > 0 &&
           messages.map((message) => (
             
             <div>
-              {message.isUser ? (
-                <UserMessage content={message.content} user={message.user} />
+              {message.user ? (
+                <UserMessage content={message.user} user={message.user} />
               ) : (
-                <Message content={message.content} sources={message.sources} stateChange={handleStateChange}  />
+                <Message content={message.ai.text} sources={message.ai.sources} stateChange={handleStateChange}  />
               )}
             </div>
           ))}
@@ -55,12 +55,12 @@ export function ChatArea({ messages, onSend ,handleStateChange}) {
                     <div
                       key={index}
                       className="bg-PrimaryGrayLight rounded-xl p-3 flex justify-between items-center"
-                      onClick={()=>stateChange(source.id)}
+                      onClick={()=>stateChange(source)}
                     >
                       <div>
-                        <h5 className="text-gray-200">{source.title}</h5>
+                        <h5 className="text-gray-200">{source}</h5>
                         <p className="text-PrimaryGrayTextDark text-sm">
-                          {source.subtitle}
+                          {source}
                         </p>
                       </div>
                       <button
