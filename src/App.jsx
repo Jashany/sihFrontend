@@ -35,13 +35,14 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation(); // Get current location
   
-  const [chats, setChats] = useState();
+  const [chats, setChats] = useState([]);
   const [activeId, setActiveId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
       setLoading(true);
-      const res = await AuthAxios.get("/chat/chats");
+      const res = await AuthAxios.get("/chat");
       const data = res.data;
       setLoading(false);
 
@@ -65,17 +66,23 @@ export default function App() {
   }, [location.pathname]);
 
   // Function to create a new chat
-  const createChat = () => {
-    const newChatId = uuidv4(); // Generate a new UUID
+  const createChat = async () => {
+    const newChatId = await uuidv4(); // Generate a new UUID
     const newChat = {
-      id: newChatId,
+      chatId: newChatId,
       title: `New Chat ${newChatId.substring(0, 5)}`,
       subtitle: "This is a new chat",
     };
-    setChats((chats) => [...chats, newChat]); // Add the new chat to the list
+  
+    setChats((prevChats) => {
+      const updatedChats = [...prevChats, newChat];
+      return updatedChats;
+    });
+  
     setActiveId(newChatId); // Set it as active
     navigate(`/${newChatId}`); // Navigate to the new chat route
   };
+  
 
   const setActiveChatId = (id) => {
     setActiveId(id);

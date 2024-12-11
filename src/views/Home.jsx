@@ -5,6 +5,7 @@ import Casepdf from "../components/CasePdf/Casepdf";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import AuthAxios from "../utils/authaxios";
 import toast from "react-hot-toast";
+import Loader from "../components/loader";
 
 const initialMessages = [
   {
@@ -36,107 +37,108 @@ export default function Home() {
   const [showSource, setShowSource] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const [chats, setChats] = useState(null);
   const [activeChat, setActiveChat] = useState(null);
-  
-  //param
-  const { id } = useParams();
-  console.log(id);
-  const [activeChatId, setActiveChatId] = useState(id);
-
   const [messages, setMessages] = useState(null);
-  
-  const handleSearch = (query) => {
-    console.log("Searching:", query);
-  };
-
-  const handleSend = async (message) => {
-    const newMessage = {
-      id: String(messages.length + 1),
-      isUser: true,
-      content: message,
-      user: message
-    };
-    setMessages([...messages, newMessage]);
-    setLoading(true);
-    const res = await AuthAxios.post("/chat/update-chat/"+activeChatId, {
-      userMessage: message
-    })
-    setLoading(false);
-    
-    const data = res.data;
-    if(data.success){
-      console.log("Message sent successfully");
-      setActiveChat(data.data);
-      setMessages(data.data.chatHistory);
-    }
-    else{
-      toast.error("Failed to send message");
-    }
-
-
-  };
-
-  const handleStateChange = (newState) => {
-    // navigate(`/${id}/source/${newState}`)
-    navigate(`/${id}/source/201959`);
-  };
-
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetch = async () => {
-      setLoading(true);
-      const res = await AuthAxios.get("/chat/"+activeChatId);
+  // Params
+  const { id } = useParams();
+
+  // Handle Send Message
+  const handleSend = async (message) => {
+    const newMessage = { user: message, ai: null };
+    setMessages((prev) => [...(prev || []), newMessage]); // Optimistic update
+    setLoading(true);
+    try {
+      const res = await AuthAxios.post(`/chat/update-chat/${id}`, {
+        userMessage: message,
+      });
       const data = res.data;
-      setLoading(false);
-
-      if(data.success){
+      if (data.success) {
         setActiveChat(data.data);
-        setMessages(data.data.chatHistory); 
+        setMessages(data.data.chatHistory);
+      } else {
+        toast.error("Failed to send message");
       }
-      else{
-        toast.error("Failed to fetch chats");
-      }
-    };
-    fetch();
-  }, []);
+    } catch (err) {
+      toast.error("An error occurred while sending the message");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  useEffect(() => {
-    const fetch = async () => {
-      setLoading(true);
+  // Fetch Chat Details
+  const fetchActiveChat = async (chatId) => {
+    if (!chatId) return;
+    setActiveChat(null); // Clear previous chat
+    setMessages(null);
+    setLoading(true);
+    try {
+      const res = await AuthAxios.get(`/chat/${chatId}`);
+      const data = res.data;
+      if (data.success) {
+        setActiveChat(data.data);
+        setMessages(data.data.chatHistory);
+      } else {
+        toast.error("Failed to fetch chat details");
+      }
+    } catch (err) {
+      toast.error("An error occurred while fetching the chat");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch All Chats
+  const fetchChats = async () => {
+    setLoading(true);
+    try {
       const res = await AuthAxios.get("/chat");
       const data = res.data;
-      setLoading(false);
-
-      if(data.success){
+      if (data.success) {
         setChats(data.data);
-      }
-      else{
+      } else {
         toast.error("Failed to fetch chats");
       }
-    };
-    fetch();
+    } catch (err) {
+      toast.error("An error occurred while fetching chats");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch active chat when ID changes
+  useEffect(() => {
+    fetchActiveChat(id);
+  }, [id]);
+
+  // Fetch all chats once
+  useEffect(() => {
+    fetchChats();
   }, []);
-
-
-
 
   return (
     <div className="flex bg-PrimaryBlack text-gray-200 h-screen w-full">
-
-      {
-        activeChat && (
-          <ChatArea
+      {activeChat && (
+        <ChatArea
           messages={activeChat.chatHistory}
           create
           onSend={handleSend}
-          handleStateChange={handleStateChange}
+          handleStateChange={(newState) =>
+            navigate(`/${id}/source/${newState}`)
+          }
         />
-        )
-      }
-      
+      )}
+
+      {loading && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-20 flex justify-center items-center">
+          <div className="relative ">
+            <Loader />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
