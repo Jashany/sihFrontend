@@ -22,3 +22,18 @@ input:focus {
   --PrimaryGrayHover: #2E2E2E;
   --PrimaryGrayIcons: #676767;
 }
+
+.inputCheckbox label{
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: var(--PrimaryGrayLight);
+  padding: 10px 20px;
+  border-radius: 10px;
+  width: 200px;
+}
+
+.inputCheckbox{
+  display: flex;
+}
+
