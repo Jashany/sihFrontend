@@ -1,18 +1,77 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid"; // Import UUID
 import Home from "./views/Home";
 import MainSideBar from "./components/MainSideBar/MainSideBar";
 import UploadDocument from "./views/UploadDocument";
+import Casepdf from "./components/CasePdf/Casepdf";
+import { Sidebar } from "./components/sidebar/sidebar";
+
+
+const initialChats = [
+  {
+    id: "1",
+    title: "Gujarat State vs Jetthalal",
+    subtitle: "Gujarat State vs Jetthalal was an amazing case about...",
+  },
+  {
+    id: "2",
+    title: "Gujarat State vs Dhanji",
+    subtitle: "Gujarat State vs Dhanji was an amazing case about...",
+  },
+];
 
 export default function App() {
+  const navigate = useNavigate();
+  const location = useLocation(); // Get current location
+
+  const [activeId, setActiveId] = useState(null);
+  const [chats, setChats] = useState(initialChats);
+
+  // Redirect to a new chat ID if user lands on "/"
+  useEffect(() => {
+    if (location.pathname === "/") {
+      createChat(); // Automatically create a new chat if landing on "/"
+    }
+  }, [location.pathname]);
+
+  // Function to create a new chat
+  const createChat = () => {
+    const newChatId = uuidv4(); // Generate a new UUID
+    const newChat = {
+      id: newChatId,
+      title: `New Chat ${newChatId.substring(0, 5)}`,
+      subtitle: "This is a new chat",
+    };
+    setChats((prevChats) => [...prevChats, newChat]); // Add the new chat to the list
+    setActiveId(newChatId); // Set it as active
+    navigate(`/${newChatId}`); // Navigate to the new chat route
+  };
+
+  const setActiveChatId = (id) => {
+    setActiveId(id);
+    navigate(`/${id}`);
+  };
+
+  const handleSearch = (query) => {
+    console.log("Searching:", query);
+  };
+
   return (
-    <BrowserRouter>
-      <div className="flex">
-        <MainSideBar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/upload" element={<UploadDocument />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <div className="flex h-[100vh]">
+      <MainSideBar />
+      <Sidebar
+        chats={chats}
+        activeChatId={activeId}
+        createNewChat={createChat} // Pass createChat to Sidebar
+        onChatSelect={setActiveChatId}
+        onSearch={handleSearch}
+      />
+      <Routes>
+        <Route path="/:id" element={<Home />} />
+        <Route path="/:id/source/:source" element={<Casepdf />} />
+        <Route path="/upload" element={<UploadDocument />} />
+      </Routes>
+    </div>
   );
 }

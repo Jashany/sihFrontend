@@ -3,7 +3,7 @@ import { ChatListItem } from "./chat-list-item";
 import penchat from "../../assets/svgs/pen-chat.svg";
 import chat from "../../assets/svgs/chatgray.svg";
 
-export function Sidebar({ chats, activeChatId, onChatSelect, onSearch }) {
+export function Sidebar({ chats, activeChatId, onChatSelect, onSearch,createNewChat }) {
   return (
     <div className="w-80 bg-PrimaryGrayDark h-screen flex flex-col">
       <div className="p-4">
@@ -14,7 +14,7 @@ export function Sidebar({ chats, activeChatId, onChatSelect, onSearch }) {
 
       <div className="flex items-center  ">
         <SearchBar onSearch={onSearch} />
-        <button className="bg-PrimaryBlue p-2.5 mr-3 rounded-lg">
+        <button className="bg-PrimaryBlue p-2.5 mr-3 rounded-lg" onClick={createNewChat}>
           <img src={penchat} alt="chat" width={18} height={10} />
         </button>
       </div>

@@ -1,7 +1,7 @@
 import chatTriangler from "../../assets/svgs/chat-triangle.svg";
 import logo from "../../assets/svgs/logo.svg";
 
-export function Message({ content, sources }) {
+ function Message({ content, sources }) {
   return (
     <div
       className={`flex  justify-start
