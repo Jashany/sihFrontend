@@ -162,7 +162,7 @@ const UploadDocument = () => {
       const data = res.data;
       if (data.success) {
         setDocs(data.data);
-      } else {
+      } else {1
         console.error("Failed to fetch documents");
       }
     } catch (err) {
