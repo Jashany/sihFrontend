@@ -3,6 +3,9 @@ import UploadButton from "./blueButton";
 import DocumentListItem from "./upload-doc-list-item";
 
 export function Sidebar({ activeDocId, docs, onDocSelect }) {
+
+
+
   return (
     <div className="w-96 bg-PrimaryGrayDark h-screen flex flex-col">
       <div className="p-4">
