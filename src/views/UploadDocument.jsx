@@ -75,8 +75,43 @@ const initialDocs = [
 const UploadDocument = () => {
   const [activeDocId, setActiveDocId] = useState(1);
   const [docs, setDocs] = useState(initialDocs);
+  const [loading, setLoading] = useState(false);
+  const [loadingStageTime, setLoadingStageTime] = useState(1000); // Default time for the last stage
+  const [summary, setSummary] = useState("");
 
-  const activeDoc = docs.find(doc => doc.id === activeDocId);
+  const activeDoc = docs.find((doc) => doc.id === activeDocId);
+
+  const CallSummarizeApi = async (text) => {
+    setLoading(true);
+
+    const startTime = Date.now(); // Record the start time
+    fetch("http://127.0.0.1:8000/api/summarize/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        input_text: text,
+      }),
+    })
+      .then((response) => {
+        return response.json().then((data) => ({
+          data,
+          duration: Date.now() - startTime, // Calculate duration
+        }));
+      })
+      .then(({ data, duration }) => {
+        setLoading(false);
+
+        // Add 1 second to the API duration for smoother transition
+        setLoadingStageTime(duration + 1000);
+        setSummary(data?.summary_text);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.error("Error:", error);
+      });
+  };
 
   return (
     <div className="flex bg-PrimaryBlack text-gray-200 h-screen w-full">
@@ -84,9 +119,22 @@ const UploadDocument = () => {
         activeDocId={activeDocId}
         docs={docs}
         onDocSelect={setActiveDocId}
+        handlePdfText={CallSummarizeApi}
       />
-      {/* <Loader /> */}
-      <SummarySection document={activeDoc} />
+      {loading && 
+        <Loader loadingStageTime={loadingStageTime} />
+      }
+      {
+        !loading && summary && 
+        <div>
+          <h3>
+            Summary
+          </h3>
+        <p className="p-2 bg-PrimaryGrayLight text-white h-fit w-[80%] m-5 rounded-md">
+          {summary}
+        </p>
+        </div>
+      }
     </div>
   );
 };

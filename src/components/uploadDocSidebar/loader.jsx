@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
 import ai from "../../assets/svgs/ai.svg";
 
-const Loader = () => {
+const Loader = ({ loadingStageTime }) => {
   const [progress, setProgress] = useState([0, 0, 0]);
-  const [currentStage, setCurrentStage] = useState(0); 
+  const [currentStage, setCurrentStage] = useState(0);
 
   useEffect(() => {
-    const arr = [100, 200, 300, 400, 500, 600, 700, 800];
-    const randomIndex = Math.floor(Math.random() * arr.length);
-    const timeout = arr[randomIndex];
-    console.log(timeout)
     const interval = setInterval(() => {
       setProgress((prev) => {
         const updatedProgress = [...prev];
@@ -24,10 +20,10 @@ const Loader = () => {
 
         return updatedProgress;
       });
-    }, timeout);
+    }, currentStage === 2 ? loadingStageTime : 200);
 
     return () => clearInterval(interval);
-  }, [currentStage]);
+  }, [currentStage, loadingStageTime]);
 
   return (
     <div className="flex flex-col h-screen w-full">
@@ -48,28 +44,26 @@ const Loader = () => {
   );
 };
 
-const LoaderBar = ({ title, progress }) => {
-  return (
-    <div className="flex flex-col w-36">
-      <p className="text-PrimaryGrayTextLight text-center">{title}</p>
-      <div className="flex items-center mt-1">
+const LoaderBar = ({ title, progress }) => (
+  <div className="flex flex-col w-36">
+    <p className="text-PrimaryGrayTextLight text-center">{title}</p>
+    <div className="flex items-center mt-1">
+      <div
+        className={`w-5 h-5 rounded-full ${
+          progress > 0 ? "bg-PrimaryBlue" : "bg-PrimaryGrayLight"
+        }`}
+      ></div>
+      <div className="w-5/6 h-1 -ml-1 rounded-full overflow-hidden">
         <div
-          className={`w-5 h-5 rounded-full ${
-            progress > 0 ? "bg-PrimaryBlue" : "bg-PrimaryGrayLight"
-          }`}
+          className="bg-PrimaryBlue h-1 rounded-full"
+          style={{
+            width: `${progress}%`,
+            transition: "width 0.5s ease",
+          }}
         ></div>
-        <div className="w-5/6 h-1 -ml-1 rounded-full overflow-hidden">
-          <div
-            className="bg-PrimaryBlue h-1 rounded-full"
-            style={{
-              width: `${progress}%`,
-              transition: "width 0.5s ease",
-            }}
-          ></div>
-        </div>
       </div>
     </div>
-  );
-};
+  </div>
+);
 
 export default Loader;

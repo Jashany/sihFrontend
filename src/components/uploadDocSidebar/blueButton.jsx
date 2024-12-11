@@ -1,8 +1,10 @@
 import { useRef } from "react"
 import pdfToText from "react-pdftotext";
 
-const UploadButton = ({ name, svg }) => {
+const UploadButton = ({ name, svg,handleText }) => {
   const fileInput = useRef();
+
+  
 
   const handleClick = () => {
     if(fileInput.current) {
@@ -13,7 +15,9 @@ const UploadButton = ({ name, svg }) => {
   function extractText(event) {
     const file = event.target.files[0];
     pdfToText(file)
-      .then((text) => console.log(text))
+      .then((text) => {
+        handleText(text);
+      })
       .catch((error) =>
         console.error(error, "Failed to extract text from pdf")
       );

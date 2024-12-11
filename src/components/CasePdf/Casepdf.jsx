@@ -154,7 +154,7 @@ const renderSelectedContent = () => {
       <div style={{ marginTop: "20px", width: "80%" }}>
         {renderSelectedContent()}
       </div>
-      <div style={{ height: "80vh", width: "60vw", margin: "auto" }}>
+      <div style={{ height: "80vh", width: "60vw", margin: "auto",marginBottom:"100px" }}>
         <iframe
           src={pdfUrl}
           style={{ width: "100%", minHeight: "100vh" }}

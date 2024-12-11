@@ -2,7 +2,7 @@ import upload from "../../assets/svgs/upload.svg";
 import UploadButton from "./blueButton";
 import DocumentListItem from "./upload-doc-list-item";
 
-export function Sidebar({ activeDocId, docs, onDocSelect }) {
+export function Sidebar({ activeDocId, docs, onDocSelect,handlePdfText }) {
 
 
 
@@ -15,7 +15,7 @@ export function Sidebar({ activeDocId, docs, onDocSelect }) {
       </div>
 
       <div className="p-4">
-        <UploadButton name="Upload Document" svg={upload} />
+        <UploadButton name="Upload Document" svg={upload} handleText={handlePdfText} />
       </div>
 
       <div className="flex-1 overflow-y-auto pl-5 pt-3">
