@@ -13,7 +13,7 @@ const MainSideBar = () => {
   const location = useLocation();
   const [active, setActive] = useState(location.pathname);
 
-  const mode = localStorage.getItem("mode");
+  const [mode, setMode] = useState(localStorage.getItem("mode") || "light");
 
   useEffect(() => {
     setActive(location.pathname);
@@ -22,6 +22,7 @@ const MainSideBar = () => {
 
   const router = useNavigate();
 
+ 
   const isActive = (path) => location.pathname.startsWith(path);
 
   return (
@@ -103,8 +104,10 @@ const MainSideBar = () => {
               {
                 mode === "dark" ? <ToggleRight size={30} color="white" onClick={async () => {
                   await localStorage.setItem("mode", "light");
+                  setMode("light");
                 }} /> : <ToggleLeft size={30} color="white" onClick={async () => {
                   await localStorage.setItem("mode", "dark");
+                  setMode("dark");
                 }} />
               }
             </div>
