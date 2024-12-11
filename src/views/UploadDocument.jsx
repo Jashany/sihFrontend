@@ -208,10 +208,12 @@ const UploadDocument = () => {
       {loading && <Loader loadingStageTime={loadingStageTime} />}
       {!loading && summary && (
         <div>
-          <h3 className="text-5xl font-extrabold pl-6 pt-8 ">Summary</h3>
-          <p className="p-2 bg-PrimaryGrayLight text-white h-fit w-[80%] m-5 rounded-md px-4 pt-4 ">
-            {summary}
-          </p>
+          <h3 className="ml-5 mt-5 text-2xl">
+            Summary
+          </h3>
+        <p className="p-2 bg-PrimaryGrayLight text-white h-fit w-[80%] m-5 rounded-md">
+          {summary}
+        </p>
         </div>
       )}
     </div>

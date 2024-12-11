@@ -17,6 +17,7 @@ import { Toaster } from "react-hot-toast";
 import RegisterPage from "./views/Register";
 import LoginPage from "./views/Login";
 import AuthAxios from "./utils/authaxios";
+import NoteBookMain from "./components/notebook/NotebookPage";
 
 const initialChats = [
   {
@@ -97,19 +98,14 @@ export default function App() {
         location.pathname === "/register" || location.pathname === "/login"
       ) && <MainSideBar />}
       {!(
-        location.pathname === "/upload" ||
         location.pathname === "/register" ||
         location.pathname === "/login" ||
-        location.pathname === "/login"
-      ) && (
-        <Sidebar
-          chats={chats}
-          activeChatId={activeId}
-          createNewChat={createChat} // Pass createChat to Sidebar
-          onChatSelect={setActiveChatId}
-          onSearch={handleSearch}
-        />
-      )}
+        location.pathname === "/login/" ||
+        location.pathname === "/register/" ||
+        location.pathname === "/register"
+      ) && <MainSideBar />}
+
+  
 
       <Routes>
         <Route path="/:id" element={<Home />} />
@@ -117,6 +113,7 @@ export default function App() {
         <Route path="/upload" element={<UploadDocument />} />
         <Route path="/upload/:id" element={<UploadDocument />} />
         <Route path="/notebook" element={<NotebookPage />} />
+        <Route path="/notebook/:id" element={<NoteBookMain />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>

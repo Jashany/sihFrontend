@@ -1,15 +1,17 @@
 import {  useState } from "react";
 import { Sidebar } from "../components/notebooksidebar/notebooksidebar";
+import { useNavigate } from "react-router-dom";
 
 
 const NotebookPage = () => {
   const [activeNotebook, setActiveNotebookId] = useState("1");
   const [notebooks, setNotebooks] = useState("");
-
-  const activeNotebookId = notebooks.find(notebook => notebook.id === activeNotebook);
+  const navigate = useNavigate();
+  // const activeNotebookId = notebooks.find(notebook => notebook.id === activeNotebook);
     
   const onNotebookSelect = (id) => {
     setActiveNotebookId(id);
+    navigate(`/notebook/${id}`);
   }
 
   return (
