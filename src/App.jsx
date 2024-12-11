@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid"; // Import UUID
 import Home from "./views/Home";
 import MainSideBar from "./components/MainSideBar/MainSideBar";
+import UploadDocument from "./views/UploadDocument";
 import Casepdf from "./components/CasePdf/Casepdf";
 import { Sidebar } from "./components/sidebar/sidebar";
 
@@ -69,6 +70,7 @@ export default function App() {
       <Routes>
         <Route path="/:id" element={<Home />} />
         <Route path="/:id/source/:source" element={<Casepdf />} />
+        <Route path="/upload" element={<UploadDocument />} />
       </Routes>
     </div>
   );
