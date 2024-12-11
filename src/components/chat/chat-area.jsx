@@ -29,6 +29,10 @@ export function ChatArea({ messages, onSend ,handleStateChange}) {
 }
 
  function Message({ content, sources ,stateChange }) {
+
+  const sourcePath = sources[0].split(".")[0];
+
+
   return (
     <div
       className={`flex  justify-start
@@ -55,7 +59,7 @@ export function ChatArea({ messages, onSend ,handleStateChange}) {
                     <div
                       key={index}
                       className="bg-PrimaryGrayLight rounded-xl p-3 flex justify-between items-center"
-                      onClick={()=>stateChange(source)}
+                      onClick={()=>stateChange(sourcePath)}
                     >
                       <div>
                         <h5 className="text-gray-200">{source}</h5>
