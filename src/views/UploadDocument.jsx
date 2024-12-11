@@ -1,85 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "../components/uploadDocSidebar/sidebar";
 import SummarySection from "../components/uploadDocSidebar/summary-section";
 import Loader from "../components/uploadDocSidebar/loader";
-
-const initialDocs = [
-  {
-    id: 1,
-    title: "Vodafone vs State.pdf",
-    summary:
-      "The Supreme Court concluded that the offshore transaction between HTIL and Vodafone was a legitimate FDI investment and fell outside India's territorial tax jurisdiction. The court set aside the Bombay High Court's judgment, which had upheld the Revenue's claim for capital gains tax. The court directed the Revenue to return the sum deposited by Vodafone with interest and to return the bank guarantee provided by Vodafone. The judgment underscores the importance of certainty and stability in tax policy for attracting foreign investment and emphasizes that legal doctrines like look through and limitation of benefits are matters of policy that require explicit legislative provision (Paragraphs 90-92, 279-280).",
-    prediction:
-      "The court prediction is most likely to be in favor of Vodafone.",
-    statures: [
-      {
-        id: 1,
-        section:
-          "Section 138. Dishonour of cheque for insufficiency, etc., of funds in the account.",
-      },
-    ],
-    sources: [
-      {
-        title: "State of Gujarat vs Kumar Bharti",
-        subtitle: "Gujarat High Court - 2020 - 67 Citations",
-        onView: () => console.log("Viewing document..."),
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: "Armaan vs Utkarsh.pdf",
-    summary:
-      "The Supreme Court concluded that the offshore transaction between HTIL and Vodafone was a legitimate FDI investment and fell outside India's territorial tax jurisdiction. The court set aside the Bombay High Court's judgment, which had upheld the Revenue's claim for capital gains tax. The court directed the Revenue to return the sum deposited by Vodafone with interest and to return the bank guarantee provided by Vodafone. The judgment underscores the importance of certainty and stability in tax policy for attracting foreign investment and emphasizes that legal doctrines like look through and limitation of benefits are matters of policy that require explicit legislative provision (Paragraphs 90-92, 279-280).",
-    prediction:
-      "The court prediction is most likely to be in favor of Vodafone.",
-    statures: [
-      {
-        id: 1,
-        section:
-          "Section 138. Dishonour of cheque for insufficiency, etc., of funds in the account.",
-      },
-    ],
-    sources: [
-      {
-        title: "State vs Vodafone",
-        subtitle: "Gujarat High Court - 2020 - 67 Citations",
-        onView: () => console.log("Viewing document..."),
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "Utkrash vs Armeen.pdf",
-    summary:
-      "The Supreme Court concluded that the offshore transaction between HTIL and Vodafone was a legitimate FDI investment and fell outside India's territorial tax jurisdiction. The court set aside the Bombay High Court's judgment, which had upheld the Revenue's claim for capital gains tax. The court directed the Revenue to return the sum deposited by Vodafone with interest and to return the bank guarantee provided by Vodafone. The judgment underscores the importance of certainty and stability in tax policy for attracting foreign investment and emphasizes that legal doctrines like look through and limitation of benefits are matters of policy that require explicit legislative provision (Paragraphs 90-92, 279-280).",
-    prediction:
-      "The court prediction is most likely to be in favor of Vodafone.",
-    statures: [
-      {
-        id: 1,
-        section:
-          "Section 138. Dishonour of cheque for insufficiency, etc., of funds in the account.",
-      },
-    ],
-    sources: [
-      {
-        title: "State of Gujarat vs Kumar Bharti",
-        subtitle: "Gujarat High Court - 2020 - 67 Citations",
-        onView: () => console.log("Viewing document..."),
-      },
-    ],
-  },
-];
+import { v4 as uuidv4 } from "uuid";
+import AuthAxios from "../utils/authaxios";
+import { useNavigate, useParams } from "react-router-dom";
+import chatTriangler from "../assets/svgs/chat-triangle.svg";
 
 const UploadDocument = () => {
-  const [activeDocId, setActiveDocId] = useState(1);
-  const [docs, setDocs] = useState(initialDocs);
+  const { id } = useParams();
+  const [activeDocId, setActiveDocId] = useState(id);
+  const [docs, setDocs] = useState([]); // Start with an empty document list
   const [loading, setLoading] = useState(false);
   const [loadingStageTime, setLoadingStageTime] = useState(1000); // Default time for the last stage
   const [summary, setSummary] = useState("");
+  const [paths, setPaths] = useState([]);
+  const [activeDoc, setActiveDoc] = useState(null);
 
-  const activeDoc = docs.find((doc) => doc.id === activeDocId);
+  const navigate = useNavigate();
 
   const CallSummarizeApi = async (text) => {
     setLoading(true);
@@ -100,12 +38,52 @@ const UploadDocument = () => {
           duration: Date.now() - startTime, // Calculate duration
         }));
       })
-      .then(({ data, duration }) => {
+      .then(async ({ data, duration }) => {
         setLoading(false);
 
         // Add 1 second to the API duration for smoother transition
         setLoadingStageTime(duration + 1000);
-        setSummary(data?.summary_text);
+
+        const generatedSummary = data?.summary_text || "";
+        setSummary(generatedSummary);
+        setPaths(data?.paths || []);
+        // Extract a few words from the summary for the title
+        const titleSnippet =
+          generatedSummary.split(" ").slice(0, 5).join(" ") + "...";
+
+        // Add the new document to the list
+        const newDoc = {
+          // Generate a new ID
+          id: uuidv4(),
+          title: titleSnippet || "Untitled Document",
+        };
+        setDocs((prevDocs) => [...prevDocs, newDoc]);
+
+        // Automatically set the new document as active
+        setActiveDocId(newDoc.id);
+
+        // Make an API call to the backend with the new document details
+
+        await AuthAxios.post("http://localhost:3000/api/doc/", {
+          documentId: newDoc.id,
+          title: newDoc.title,
+          summary: generatedSummary,
+          paths: data?.paths || [],
+        })
+          .then((response) => {
+            const backendResponse = response.data; // Access the response data
+            if (backendResponse.success) {
+              console.log("Summary saved successfully");
+            } else {
+              console.error("Failed to save summary:", backendResponse.error);
+            }
+          })
+          .catch((error) => {
+            console.error(
+              "Error while saving summary to backend:",
+              error.message
+            );
+          });
       })
       .catch((error) => {
         setLoading(false);
@@ -113,28 +91,118 @@ const UploadDocument = () => {
       });
   };
 
+  const fetchDocs = async () => {
+    setLoading(true);
+    try {
+      const res = await AuthAxios.get("/doc");
+      const data = res.data;
+      if (data.success) {
+        setDocs(data.data);
+        if (data.data.length > 0) {
+          // Automatically set the first document as active
+          const firstDoc = data.data[0];
+          setActiveDocId(firstDoc.id);
+          setSummary(firstDoc.summary || "");
+          setPaths(firstDoc.paths || []);
+        }
+      } else {
+        console.error("Failed to fetch documents");
+      }
+    } catch (err) {
+      console.error("An error occurred while fetching documents:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
+  useEffect(() => {
+    fetchDocs(); // Automatically fetches and sets the first document as active
+  }, []);
+  
+  useEffect(() => {
+    if (activeDocId) {
+      const fetchActiveDoc = async () => {
+        setLoading(true);
+        try {
+          const res = await AuthAxios.get(`/doc/${activeDocId}`);
+          const data = res.data;
+          if (data.success) {
+            setSummary(data.data.summary || "");
+            setPaths(data.data.paths || []);
+          } else {
+            console.error("Failed to fetch the active document");
+          }
+        } catch (err) {
+          console.error("Error while fetching the active document:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchActiveDoc();
+    }
+  }, [activeDocId]);
+
   return (
-    <div className="flex bg-PrimaryBlack text-gray-200 h-screen w-full">
+    <div className=" bg-PrimaryBlack text-gray-200 min-h-screen w-full flex justify-center   ">
+      <div className="min-h-screen">
+
       <Sidebar
         activeDocId={activeDocId}
         docs={docs}
-        onDocSelect={setActiveDocId}
+        onDocSelect={(docId) => setActiveDocId(docId)} // Pass the selected document ID
         handlePdfText={CallSummarizeApi}
-      />
-      {loading && 
-        <Loader loadingStageTime={loadingStageTime} />
-      }
-      {
-        !loading && summary && 
-        <div>
-          <h3>
-            Summary
-          </h3>
-        <p className="p-2 bg-PrimaryGrayLight text-white h-fit w-[80%] m-5 rounded-md">
-          {summary}
-        </p>
+        />
         </div>
-      }
+
+      {loading && <Loader loadingStageTime={loadingStageTime} />}
+
+      <div className="flex-1 gap-4  p-10 bg-PrimaryBlack max-h-[100vh] overflow-y-scroll">
+        {!loading && summary && (
+          <div className="">
+            <h3 className="ml-5 mt-5 text-5xl font-extrabold ">Summary</h3>
+            <p className="p-4 bg-PrimaryGrayLight text-white h-fit w-[80%] m-5 rounded-md">
+              {summary}
+            </p>
+          </div>
+        )}
+
+        {paths && paths.length > 0 && (
+          <div className="mt-4 pl-4">
+            <h4 className="text-gray-400 text-sm mb-2">Sources</h4>
+            <div className="space-y-2">
+              {paths.map((path, index) => (
+                <div
+                  key={index}
+                  className="bg-PrimaryGrayLight rounded-xl p-3 flex justify-between items-center"
+                  onClick={() => stateChange(path)}
+                >
+                  <div>
+                    <h5 className="text-gray-200">{path}</h5>
+                    <p className="text-PrimaryGrayTextDark text-sm">{path}</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const pathname = path.split(".")[0];
+                      navigate(`/files/source/${pathname}`);
+                    }}
+                    className="px-5 py-2 text-sm bg-PrimaryGrayLighter text-gray-200 rounded-xl hover:bg-PrimaryGrayDark/30 transition-colors flex justify-center items-center space-x-1 gap-2 "
+                  >
+                    <img
+                      src={chatTriangler}
+                      alt="chat"
+                      width={15}
+                      height={10}
+                    />
+                    View Document
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

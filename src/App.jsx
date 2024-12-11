@@ -17,7 +17,7 @@ import { Toaster } from "react-hot-toast";
 import RegisterPage from "./views/Register";
 import LoginPage from "./views/Login";
 import AuthAxios from "./utils/authaxios";
-import MainHome from "./views/MainHome";
+import NoteBookMain from "./components/notebook/NotebookPage";
 
 const initialChats = [
   {
@@ -92,34 +92,24 @@ export default function App() {
 
   console.log(location.pathname);
   return (
-    <div className={location.pathname === "/landing" ? "" : "flex h-[100vh]"}>
+    <div className="flex h-[100vh] bg-PrimaryBlack  ">
       <Toaster position="top-right" reverseOrder={false} />
       {!(
         location.pathname === "/landing" ||
         location.pathname === "/register" || location.pathname === "/login"
       ) && <MainSideBar />}
-      {!(
-        location.pathname === "/landing" ||
-        location.pathname === "/upload" ||
-        location.pathname === "/register" ||
-        location.pathname === "/login" ||
-        location.pathname === "/login"
-      ) && (
-        <Sidebar
-          chats={chats}
-          activeChatId={activeId}
-          createNewChat={createChat} // Pass createChat to Sidebar
-          onChatSelect={setActiveChatId}
-          onSearch={handleSearch}
-        />
-      )}
+     
+
+  
 
       <Routes>
         <Route path="/landing" element={<MainHome />} />
         <Route path="/:id" element={<Home />} />
         <Route path="/:id/source/:source" element={<Casepdf />} />
         <Route path="/upload" element={<UploadDocument />} />
+        <Route path="/upload/:id" element={<UploadDocument />} />
         <Route path="/notebook" element={<NotebookPage />} />
+        <Route path="/notebook/:id" element={<NoteBookMain />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>

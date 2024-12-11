@@ -11,47 +11,55 @@ export function Sidebar({
   createNewChat,
 }) {
   return (
-    <div className="w-80 bg-PrimaryGrayDark h-screen flex flex-col">
+    <div className="w-[350px] bg-PrimaryGrayDark h-screen flex flex-col">
+      {/* Header Section */}
       <div className="p-4">
         <div className="flex items-center space-x-2">
           <h1 className="text-gray-200 font-semibold">Chats</h1>
         </div>
       </div>
 
-      <div className="flex items-center  ">
+      {/* Search Bar */}
+      <div className="flex items-center">
         <SearchBar onSearch={onSearch} />
         <button
           className="bg-PrimaryBlue p-2.5 mr-3 rounded-lg"
           onClick={createNewChat}
         >
-          <img src={penchat} alt="chat" width={18} height={10} />
+          <img src={penchat} alt="New Chat" width={18} height={10} />
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto pl-5 pt-3  ">
+      {/* Chats List */}
+      <div className="flex-1 overflow-y-auto pl-5 pt-3 scrollbar-minimal">
         <h1 className="text-[#676767] flex gap-1 pb-2">
-          <img src={chat} alt="" />
+          <img src={chat} alt="Chats Icon" />
           Recent Chats
         </h1>
-        <div className="flex flex-col gap-3">
-          {chats &&
-            chats.length > 0 &&
-            chats.map((chat) => (
-              <ChatListItem
-                key={chat.chatId}
-                title={ "New Chat..."}
-                subtitle={"Ask your query..."}
-                isActive={chat.chatId === activeChatId}
-                onClick={() => onChatSelect(chat.chatId)}
-              />
-            ))}
+        <div className="overflow-y-auto h-[92%] scrollbar-thin scrollbar-thumb-PrimaryGrayDark scrollbar-track-PrimaryGrayLight">
+          {chats && chats.length > 0 ? (
+            chats.map((chat) => {
+              const firstMessage = chat.chatHistory?.[0]?.user || "New Chat...";
+              const secondMessage =
+                chat.chatHistory?.[1]?.ai?.text || "Start a new chat";
 
-          {!chats && (
+              return (
+                <ChatListItem
+                  key={chat.chatId}
+                  title={firstMessage}
+                  subtitle={secondMessage}
+                  isActive={chat.chatId === activeChatId}
+                  onClick={() => onChatSelect(chat.chatId)}
+                />
+              );
+            })
+          ) : (
             <div className="text-PrimaryGrayTextLight">No Chats Found</div>
           )}
         </div>
       </div>
 
+      {/* Footer */}
       <button className="p-4 text-gray-400 hover:text-gray-200 transition-colors">
         <svg
           className="w-6 h-6"
@@ -70,3 +78,5 @@ export function Sidebar({
     </div>
   );
 }
+
+export default Sidebar;

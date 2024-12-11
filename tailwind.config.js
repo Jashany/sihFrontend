@@ -19,5 +19,5 @@ export default {
       sans: ['Urbanist', 'sans-serif']
     }
   },
-  plugins: [],
+  plugins: [require('tailwind-scrollbar')],
 };
