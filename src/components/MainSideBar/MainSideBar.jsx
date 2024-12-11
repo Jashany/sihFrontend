@@ -16,6 +16,8 @@ const MainSideBar = () => {
 
   const router = useNavigate();
 
+  const isActive = (path) => location.pathname.startsWith(path);
+
   return (
     <div className={styles.main}>
       <div>
@@ -30,58 +32,56 @@ const MainSideBar = () => {
             marginTop: "100px",
             display: "flex",
             flexDirection: "column",
-            contentJustify: "center",
+            justifyContent: "center",
             alignItems: "center",
             gap: "30px",
           }}
         >
+          {/* Home */}
           <div
             className={`${styles.logoDiv} ${
-              active === "/upload" || active === "/notebook"
-                ? ""
-                : "bg-PrimaryBlue p-1.5 rounded-xl "
+              isActive("/") && !isActive("/upload") && !isActive("/notebook")
+                ? "bg-PrimaryBlue p-1.5 rounded-xl"
+                : ""
             }`}
-
-            onClick={()=>{
-              router("/")
+            onClick={() => {
+              router("/");
             }}
-
           >
             <MessageCircle
               size={27}
               color={`${
-                active === "/upload" || active === "/notebook"
-                  ? "gray"
-                  : "white"
+                isActive("/") && !isActive("/upload") && !isActive("/notebook")
+                  ? "white"
+                  : "gray"
               }`}
             />
           </div>
+
+          {/* Upload */}
           <div
             className={`${styles.logoDiv} ${
-              active === "/upload" ? "bg-PrimaryBlue p-1.5 rounded-xl" : ""
+              isActive("/upload") ? "bg-PrimaryBlue p-1.5 rounded-xl" : ""
             }`}
-
-            onClick={()=>{
-              router("/upload")
+            onClick={() => {
+              router("/upload");
             }}
           >
-            <Upload
-              size={27}
-              color={`${active === "/upload" ? "white" : "gray"}`}
-            />
+            <Upload size={27} color={`${isActive("/upload") ? "white" : "gray"}`} />
           </div>
+
+          {/* Notebook */}
           <div
             className={`${styles.logoDiv} ${
-              active === "/notebook" ? "bg-PrimaryBlue p-1.5 rounded-xl " : ""
+              isActive("/notebook") ? "bg-PrimaryBlue p-1.5 rounded-xl" : ""
             }`}
-
-            onClick={()=>{
-              router("/notebook")
+            onClick={() => {
+              router("/notebook");
             }}
           >
             <NotebookPen
               size={27}
-              color={`${active === "/notebook" ? "white" : "gray"}`}
+              color={`${isActive("/notebook") ? "white" : "gray"}`}
             />
           </div>
         </div>
