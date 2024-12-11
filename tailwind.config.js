@@ -16,6 +16,9 @@ export default {
         PrimaryLight: '#ffffff',
       },
     },
+    fontFamily: {
+      sans: ['Urbanist', 'sans-serif']
+    }
   },
   plugins: [],
 };

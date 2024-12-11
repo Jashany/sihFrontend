@@ -4,10 +4,16 @@ import styles from "./MainSideBar.module.css";
 import { LogOut } from "lucide-react";
 import { User, MessageCircle, Upload, NotebookPen } from "lucide-react";
 import { useEffect, useState } from "react";
+import AuthAxios from "../../utils/authaxios";
+import toast from "react-hot-toast";
+import {ToggleRight, ToggleLeft} from 'lucide-react';
+
 
 const MainSideBar = () => {
   const location = useLocation();
   const [active, setActive] = useState(location.pathname);
+
+  const [mode, setMode] = useState(localStorage.getItem("mode") || "light");
 
   useEffect(() => {
     setActive(location.pathname);
@@ -16,6 +22,7 @@ const MainSideBar = () => {
 
   const router = useNavigate();
 
+ 
   const isActive = (path) => location.pathname.startsWith(path);
 
   return (
@@ -67,8 +74,13 @@ const MainSideBar = () => {
               router("/upload");
             }}
           >
-            <Upload size={27} color={`${isActive("/upload") ? "white" : "gray"}`} />
+            <Upload
+              size={27}
+              color={`${isActive("/upload") ? "white" : "gray"}`}
+            />
           </div>
+
+
 
           {/* Notebook */}
           <div
@@ -87,7 +99,31 @@ const MainSideBar = () => {
         </div>
       </div>
       <div>
-        <LogOut size={30} color="white" />
+
+            <div>
+              {
+                mode === "dark" ? <ToggleRight size={30} color="white" onClick={async () => {
+                  await localStorage.setItem("mode", "light");
+                  setMode("light");
+                }} /> : <ToggleLeft size={30} color="white" onClick={async () => {
+                  await localStorage.setItem("mode", "dark");
+                  setMode("dark");
+                }} />
+              }
+            </div>
+
+        <div
+          onClick={async () => {
+            const response = await AuthAxios.get("/auth/logout");
+            const data = response.data;
+            if (data.success) {
+              toast.success("Logged out successfully");
+              router("/landing");
+            }
+          }}
+        >
+          <LogOut size={30} color="white" />
+        </div>
         <div
           style={{
             height: "30px",

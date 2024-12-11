@@ -17,6 +17,7 @@ import { Toaster } from "react-hot-toast";
 import RegisterPage from "./views/Register";
 import Draggable from "react-draggable";
 import LoginPage from "./views/Login";
+import MainHome from "./views/MainHome";
 import AuthAxios from "./utils/authaxios";
 import NoteBookMain from "./components/notebook/NotebookPage";
 import { Pencil } from "lucide-react";
@@ -96,10 +97,11 @@ export default function App() {
 
   console.log(location.pathname);
   return (
-    <div className="flex h-[100vh] w-[100vw]">
+    <div className={`${location.pathname === "/landing" ? " " : "flex flex-1 h-[100vh] bg-PrimaryBlack "}`}>
       <Toaster position="top-right" reverseOrder={false} />
 
       {!(
+        location.pathname === "/landing" ||
         location.pathname === "/register" || location.pathname === "/login"
       ) && <MainSideBar />}
 
