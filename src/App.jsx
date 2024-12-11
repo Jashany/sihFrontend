@@ -97,13 +97,7 @@ export default function App() {
       {!(
         location.pathname === "/register" || location.pathname === "/login"
       ) && <MainSideBar />}
-      {!(
-        location.pathname === "/register" ||
-        location.pathname === "/login" ||
-        location.pathname === "/login/" ||
-        location.pathname === "/register/" ||
-        location.pathname === "/register"
-      ) && <MainSideBar />}
+     
 
   
 

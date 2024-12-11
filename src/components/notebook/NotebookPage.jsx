@@ -8,6 +8,7 @@ const NoteBookMain = () => {
   const [title, setTitle] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [savedText, setSavedText] = useState("");
+  const [data, setData] = useState({});
 
   // Fetch notebook details
   useEffect(() => {
@@ -20,7 +21,8 @@ const NoteBookMain = () => {
         },
       });
       const data = await res.json();
-      setTitle(data.title);
+      setData(data.data);
+      setTitle(data.data.title);
     };
 
     fetchNotebook();
@@ -78,7 +80,24 @@ const NoteBookMain = () => {
         <div className="text-sm text-gray-400 mt-2">
           {isSaving ? "Saving..." : savedText}
         </div>
+        <div>
+        {data?.segments && data?.segments > 0 ? (
+            <div>
+            {data.segments.map((segment) => (
+              <div key={segment.id} className="bg-PrimaryGrayDark p-4">
+                <h1 className="text-lg text-gray-200 font-semibold">
+                  {segment.title}
+                </h1>
+                <p className="text-gray-400">{segment.content}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-gray-200">No Notes found</div>
+        )}
       </div>
+      </div>
+   
     </div>
   );
 };
