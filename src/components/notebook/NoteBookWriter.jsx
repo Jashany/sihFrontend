@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Pencil } from "lucide-react";
+import { Pencil,NotebookPen } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 const NotebookWriter = () => {

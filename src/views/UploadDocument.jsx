@@ -14,13 +14,15 @@ const UploadDocument = () => {
   const [loading, setLoading] = useState(false);
   const [loadingStageTime, setLoadingStageTime] = useState(1000); // Default time for the last stage
   const [summary, setSummary] = useState("");
+  const [judgement, setjudgement] = useState("");
   const [paths, setPaths] = useState([]);
   const [activeDoc, setActiveDoc] = useState(null);
 
   const navigate = useNavigate();
 
   const CallSummarizeApi = async (text) => {
-    setLoading(true);
+    setLoading(true); 
+    console.log(text)
 
     const startTime = Date.now(); // Record the start time
     fetch("http://127.0.0.1:8000/api/summarize/", {
@@ -58,6 +60,69 @@ const UploadDocument = () => {
           title: titleSnippet || "Untitled Document",
         };
         setDocs((prevDocs) => [...prevDocs, newDoc]);
+
+        // Automatically set the new document as active
+        setActiveDocId(newDoc.id);
+
+        // Make an API call to the backend with the new document details
+
+        await AuthAxios.post("http://localhost:3000/api/doc/", {
+          documentId: newDoc.id,
+          title: newDoc.title,
+          summary: generatedSummary,
+          paths: data?.paths || [],
+        })
+          .then((response) => {
+            const backendResponse = response.data; // Access the response data
+            if (backendResponse.success) {
+              console.log("Summary saved successfully");
+            } else {
+              console.error("Failed to save summary:", backendResponse.error);
+            }
+          })
+          .catch((error) => {
+            console.error(
+              "Error while saving summary to backend:",
+              error.message
+            );
+          });
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.error("Error:", error);
+      });
+  };
+
+  
+  const JudgementPrediction = async (text) => {
+    setLoading(true);
+
+    const startTime = Date.now(); // Record the start time
+    fetch("http://127.0.0.1:8000/api/judgement/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        input_text: text,
+      }),
+    })
+      .then((response) => {
+        return response.json().then((data) => ({
+          data,
+          duration: Date.now() - startTime, // Calculate duration
+        }));
+      })
+      .then(async ({ data, duration }) => {
+        setLoading(false);
+
+        // Add 1 second to the API duration for smoother transition
+        setLoadingStageTime(duration + 1000);
+
+        const generatedSummary = data?.result || "";
+        setjudgement(generatedSummary);
+        // Extract a few words from the summary for the title
+        
 
         // Automatically set the new document as active
         setActiveDocId(newDoc.id);
@@ -152,7 +217,10 @@ const UploadDocument = () => {
         activeDocId={activeDocId}
         docs={docs}
         onDocSelect={(docId) => setActiveDocId(docId)} // Pass the selected document ID
-        handlePdfText={CallSummarizeApi}
+        handlePdfText={(text)=>{
+          CallSummarizeApi(text);
+          
+        }}
         />
         </div>
 
@@ -167,6 +235,16 @@ const UploadDocument = () => {
             </p>
           </div>
         )}
+
+        {!loading && judgement && (
+          <div className="">
+            <h3 className="ml-5 mt-5 text-5xl font-extrabold ">Judgement</h3>
+            <p className="p-4 dark:bg-PrimaryGrayLight dark:text-white text-black bg-SecondaryWhite h-fit w-[80%] m-5 rounded-md">
+              {judgement}
+            </p>
+          </div>
+        )}
+
 
         {paths && paths.length > 0 && (
           <div className="mt-4 pl-4">
