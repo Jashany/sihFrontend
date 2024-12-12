@@ -18,7 +18,7 @@ const MainHome = () => {
   };
 
   return (
-    <>
+    <div>
       <nav className="flex items-center flex-evenly justify-around py-4 drop-shadow-md bg-[#F4F6FC]/95 sticky top-0 z-10">
         <img src={MainLogo} />
         <div className="flex gap-16">
@@ -89,7 +89,7 @@ const MainHome = () => {
         <img src={auction} />
         <Button showIcon={true} classes="h-11" />
       </footer>
-    </>
+    </div>
   );
 };
 

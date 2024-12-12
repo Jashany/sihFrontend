@@ -123,7 +123,7 @@ export default function App() {
           </Routes>
         </div>
         {!(
-          location.pathname === "/register" || location.pathname === "/login"
+          location.pathname === "/register" || location.pathname === "/login" || location === "/landing"
         ) && <NotebookWriter />}
       </div>
     </div>
