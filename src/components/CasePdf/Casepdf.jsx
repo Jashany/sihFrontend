@@ -1,12 +1,25 @@
+
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import Summary from "../summary/SummarySection";
 
 const Casepdf = () => {
   const [caseData, setCaseData] = useState(null);
   const [pdfUrl, setPdfUrl] = useState(""); // To store PDF file URL
   const [selectedSections, setSelectedSections] = useState([]); // Tracks selected sections
-
+  const [text, setText] = useState("");
   const { source } = useParams();
+  const [summary, setSummary] = useState(false);
+
+  useEffect(()=>{
+    const fetchText = async () => {
+      const response = await axios.get(`https://pub-d58fae2843f34cfcbf2cfb0606b5efaf.r2.dev/judgmenttxts/${source}.txt`);
+      const data = response.data;
+      setText(data);
+    }
+    fetchText();
+  },[summary])
 
   useEffect(() => {
     // Fetch the case data
@@ -38,12 +51,12 @@ const Casepdf = () => {
     );
   };
 
-// Function to render selected content with headings
-const renderSelectedContent = () => {
+  // Function to render selected content with headings
+  const renderSelectedContent = () => {
     if (selectedSections.length === 0) {
       return null; // Do not render anything if no checkbox is selected
     }
-  
+
     let hasContent = false;
     const contentSections = selectedSections.map((section) => {
       let content;
@@ -60,7 +73,7 @@ const renderSelectedContent = () => {
           <p key={index}>{conclusion}</p>
         ));
       }
-  
+
       if (content && content.length > 0) {
         hasContent = true;
         return (
@@ -68,37 +81,42 @@ const renderSelectedContent = () => {
             className="dark:bg-PrimaryGrayLight bg-TertiaryWhite dark:text-white text-black p-4 rounded-md mb-4"
             key={section}
             style={{ marginTop: "20px" }}
-            
           >
-            <h3 className="dark:text-white text-black font-semibold text-xl">{section}</h3>
+            <h3 className="dark:text-white text-black font-semibold text-xl">
+              {section}
+            </h3>
             {content}
           </div>
         );
       }
       return null;
     });
-  
+
     return (
       <>
         {contentSections}
-        {!hasContent && selectedSections.length !=0 (
-          <p style={{ color: "white", marginTop: "20px" }}>
-            No content available for the selected sections.
-          </p>
-        )}
+        {!hasContent &&
+          selectedSections.length !=
+            0(
+              <p style={{ color: "white", marginTop: "20px" }}>
+                No content available for the selected sections.
+              </p>
+            )}
       </>
     );
   };
-  
 
   const isCitations = caseData?.data?.Citations !== "Not Found";
   const isBenchFound = caseData?.data?.Bench !== "Not Found";
   const isAuthorFound = caseData?.data?.Judgment_Author !== "Not Found";
 
   return (
-    <div className="flex-1 flex flex-col max-h-[100vh] overflow-scroll  dark:bg-PrimaryBlack bg-PrimaryWhite items-center py-8" style={{
-      scrollbarWidth: "none",
-    }}>
+    <div
+      className="flex-1 flex flex-col max-h-[100vh] overflow-scroll  dark:bg-PrimaryBlack bg-PrimaryWhite items-center py-8"
+      style={{
+        scrollbarWidth: "none",
+      }}
+    >
       <h2 className="dark:text-white text-black">
         {caseData?.data?.Court_Name || "Loading..."}
       </h2>
@@ -121,25 +139,25 @@ const renderSelectedContent = () => {
         className="inputCheckbox"
         style={{ margin: "20px 0", color: "white" }}
       >
-           {caseData?.data?.Issues.length > 0 && (
-        <label>
-          <input
-            type="checkbox"
-            checked={selectedSections.includes("Issues")}
-            onChange={() => handleCheckboxChange("Issues")}
-          />
-          Issues
-        </label>
+        {caseData?.data?.Issues.length > 0 && (
+          <label>
+            <input
+              type="checkbox"
+              checked={selectedSections.includes("Issues")}
+              onChange={() => handleCheckboxChange("Issues")}
+            />
+            Issues
+          </label>
         )}
         {caseData?.data?.Facts.length > 0 && (
-        <label style={{ marginLeft: "10px" }}>
-          <input
-            type="checkbox"
-            checked={selectedSections.includes("Facts")}
-            onChange={() => handleCheckboxChange("Facts")}
-          />
-          Facts
-        </label>
+          <label style={{ marginLeft: "10px" }}>
+            <input
+              type="checkbox"
+              checked={selectedSections.includes("Facts")}
+              onChange={() => handleCheckboxChange("Facts")}
+            />
+            Facts
+          </label>
         )}
         {caseData?.data?.Conclusions.length > 0 && (
           <label style={{ marginLeft: "10px" }}>
@@ -153,10 +171,29 @@ const renderSelectedContent = () => {
         )}
       </div>
 
+        
+
+      <button className={`bg-PrimaryBlue text-white px-12 hover:bg-blue-700 py-3 rounded-lg ${summary ? "hidden" : ""}`}
+        onClick={() => setSummary(true)}
+      
+      >Generate Summary</button>
       <div style={{ marginTop: "20px", width: "80%" }}>
         {renderSelectedContent()}
       </div>
-      <div style={{ height: "80vh", width: "60vw", margin: "auto",marginBottom:"100px" }}>
+
+      {
+          summary && text && (
+            <Summary text={text} />
+          )
+        }
+      <div
+        style={{
+          height: "80vh",
+          width: "60vw",
+          margin: "auto",
+          marginBottom: "100px",
+        }}
+      >
         <iframe
           src={pdfUrl}
           style={{ width: "100%", minHeight: "100vh" }}

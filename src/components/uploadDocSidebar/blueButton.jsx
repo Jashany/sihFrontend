@@ -24,7 +24,7 @@ const UploadButton = ({ name, svg,handleText }) => {
   }
 
   return (
-    <button className="bg-PrimaryBlue px-5 py-1.5 rounded-md flex w-full justify-center items-center gap-2 hover:bg-blue-500 transition-colors" onClick={handleClick}>
+    <button className="bg-PrimaryBlue px-5 py-1.5 rounded-md flex w-[92%] justify-center items-center gap-2 hover:bg-blue-500 transition-colors" onClick={handleClick}>
         {name}
         <img src={svg} alt="chat" width={18} height={10} />
         <input type="file" className="hidden" ref={fileInput}  accept=".pdf, .doc, .docx" onChange={extractText} />

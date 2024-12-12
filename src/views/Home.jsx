@@ -8,14 +8,15 @@ import toast from "react-hot-toast";
 import Loader from "../components/loader";
 import { v4 as uuidv4 } from "uuid";
 
-
 export default function Home() {
   const [showSource, setShowSource] = useState(null);
   const [chats, setChats] = useState(null);
+  const [filteredChats, setFilteredChats] = useState(null); // Filtered chats
   const [activeChat, setActiveChat] = useState(null);
   const [activeId, setActiveId] = useState(null); // Active chat ID state
   const [messages, setMessages] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(""); // Search term state
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ export default function Home() {
       const res = await AuthAxios.get(`/chat/${chatId}`);
       const data = res.data;
       if (data.success) {
-        setActiveChat(data.data|| null);
+        setActiveChat(data.data || null);
         setMessages(data.data.chatHistory || []);
       } else {
         toast.error("Failed to fetch chat details");
@@ -77,6 +78,7 @@ export default function Home() {
       const data = res.data;
       if (data.success) {
         setChats(data.data);
+        setFilteredChats(data.data); // Initialize filtered chats
       } else {
         toast.error("Failed to fetch chats");
       }
@@ -98,12 +100,33 @@ export default function Home() {
 
     setChats((prevChats) => {
       const updatedChats = [...prevChats, newChat];
+      setFilteredChats(updatedChats); // Update filtered chats as well
       return updatedChats;
     });
 
     setActiveId(newChatId); // Set it as active
     navigate(`/${newChatId}`);
   };
+
+  // Filter Chats Based on Search
+  const handleSearch = (searchTerm) => {
+    setSearchTerm(searchTerm);
+    if (!searchTerm) {
+      setFilteredChats(chats);
+      return;
+    }
+    const lowercasedTerm = searchTerm.toLowerCase();
+    const filtered = chats.filter((chat) => {
+      const firstUserMessage = chat.chatHistory?.[0]?.user?.toLowerCase();
+      const secondAiMessage = chat.chatHistory?.[1]?.ai?.text?.toLowerCase();
+      return (
+        (firstUserMessage && firstUserMessage.includes(lowercasedTerm)) ||
+        (secondAiMessage && secondAiMessage.includes(lowercasedTerm))
+      );
+    });
+    setFilteredChats(filtered);
+  };
+  
   
 
   // Fetch active chat when ID changes
@@ -122,9 +145,10 @@ export default function Home() {
   return (
     <>
       <Sidebar
-        chats={chats}
+        chats={filteredChats} // Use filtered chats
         activeChatId={activeId}
         createNewChat={createChat} // Pass createChat to Sidebar
+        onSearch={handleSearch} // Pass handleSearch to Sidebar
         onChatSelect={(chatId) => navigate(`/${chatId}`)} // Update active chat on selection
       />
       <div className="flex dark:bg-PrimaryBlack dark:text-gray-200 bg-PrimaryWhite text-black h-screen w-full">
