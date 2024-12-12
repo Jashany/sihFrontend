@@ -113,7 +113,7 @@ export default function Home() {
         createNewChat={createChat} // Pass createChat to Sidebar
         onChatSelect={(chatId) => navigate(`/${chatId}`)} // Update active chat on selection
       />
-      <div className="flex bg-PrimaryBlack text-gray-200 h-screen w-full">
+      <div className="flex dark:bg-PrimaryBlack dark:text-gray-200 bg-PrimaryWhite text-black h-screen w-full">
         {activeChat && (
           <ChatArea
             messages={messages} // Use messages state here
@@ -125,7 +125,7 @@ export default function Home() {
         )}
 
         {loading && (
-          <div className="fixed inset-0 z-50 bg-black bg-opacity-20 flex justify-center items-center">
+          <div className="fixed inset-0 z-50 dark:bg-black bg-white bg-opacity-20 flex justify-center items-center">
             <div className="relative">
               <Loader />
             </div>

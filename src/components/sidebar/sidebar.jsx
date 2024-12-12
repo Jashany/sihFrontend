@@ -11,11 +11,11 @@ export function Sidebar({
   createNewChat,
 }) {
   return (
-    <div className="w-[350px] bg-PrimaryGrayDark h-screen flex flex-col">
+    <div className="w-[350px] dark:bg-PrimaryGrayDark bg-TertiaryWhite h-screen flex flex-col">
       {/* Header Section */}
       <div className="p-4">
         <div className="flex items-center space-x-2">
-          <h1 className="text-gray-200 font-semibold">Chats</h1>
+          <h1 className="dark:text-gray-200 text-DarkBlue font-semibold">Chats</h1>
         </div>
       </div>
 

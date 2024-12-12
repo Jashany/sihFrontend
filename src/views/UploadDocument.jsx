@@ -145,7 +145,7 @@ const UploadDocument = () => {
   }, [activeDocId]);
 
   return (
-    <div className=" bg-PrimaryBlack text-gray-200 min-h-screen w-full flex justify-center   ">
+    <div className=" dark:bg-PrimaryBlack dark:text-gray-200 bg-PrimaryWhite text-black min-h-screen w-full flex justify-center   ">
       <div className="min-h-screen">
 
       <Sidebar
@@ -158,11 +158,11 @@ const UploadDocument = () => {
 
       {loading && <Loader loadingStageTime={loadingStageTime} />}
 
-      <div className="flex-1 gap-4  p-10 bg-PrimaryBlack max-h-[100vh] overflow-y-scroll">
+      <div className="flex-1 gap-4  p-10 dark:bg-PrimaryBlack bg-PrimaryWhite max-h-[100vh] overflow-y-scroll">
         {!loading && summary && (
           <div className="">
             <h3 className="ml-5 mt-5 text-5xl font-extrabold ">Summary</h3>
-            <p className="p-4 bg-PrimaryGrayLight text-white h-fit w-[80%] m-5 rounded-md">
+            <p className="p-4 dark:bg-PrimaryGrayLight dark:text-white text-black bg-SecondaryWhite h-fit w-[80%] m-5 rounded-md">
               {summary}
             </p>
           </div>
@@ -170,12 +170,12 @@ const UploadDocument = () => {
 
         {paths && paths.length > 0 && (
           <div className="mt-4 pl-4">
-            <h4 className="text-gray-400 text-sm mb-2">Sources</h4>
+            <h4 className="dark:text-gray-400 text-DarkBlue text-sm mb-2">Sources</h4>
             <div className="space-y-2">
               {paths.map((path, index) => (
                 <div
                   key={index}
-                  className="bg-PrimaryGrayLight rounded-xl p-3 flex justify-between items-center"
+                  className="dark:bg-PrimaryGrayLight bg-SecondaryWhite rounded-xl p-3 flex justify-between items-center"
                   onClick={() => stateChange(path)}
                 >
                   <div>
@@ -187,7 +187,7 @@ const UploadDocument = () => {
                       const pathname = path.split(".")[0];
                       navigate(`/files/source/${pathname}`);
                     }}
-                    className="px-5 py-2 text-sm bg-PrimaryGrayLighter text-gray-200 rounded-xl hover:bg-PrimaryGrayDark/30 transition-colors flex justify-center items-center space-x-1 gap-2 "
+                    className="px-5 py-2 text-sm dark:bg-PrimaryGrayLighter bg-TertiaryWhite dark:text-gray-200 text-black rounded-xl hover:bg-PrimaryGrayDark/30 transition-colors flex justify-center items-center space-x-1 gap-2 "
                   >
                     <img
                       src={chatTriangler}

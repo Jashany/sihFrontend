@@ -1,5 +1,5 @@
 import autoprefixer from "autoprefixer";
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import AuthAxios from "../utils/authaxios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -11,6 +11,23 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [dark, setDark] = useState(() => {
+    const savedTheme = localStorage.getItem("theme");
+    return savedTheme === "dark";
+  });
+
+  // Effect to apply theme on component mount and when dark state changes
+  useEffect(() => {
+    if (dark) {
+      document.body.classList.remove("light");
+      document.body.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.body.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [dark]);
 
   const navigate = useNavigate();
 
@@ -44,23 +61,23 @@ export default function RegisterPage() {
 
 
   return (
-    <div className="min-h-screen w-full bg-PrimaryBlack flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen w-full dark:bg-PrimaryBlack bg-PrimaryWhite flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center font-semibold text-white text-lg">
+        <h2 className="mt-6 text-center font-semibold dark:text-white text-black text-lg">
           Create your account
         </h2>
-        <p className="mt-1 text-center text-PrimaryGrayTextDark">
+        <p className="mt-1 text-center dark:text-PrimaryGrayTextDark text-slate-500">
           Get started for free!
         </p>
       </div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="py-8 px-4 sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-white"
+                className="block text-sm font-medium dark:text-white text-slate-800"
               >
                 Name
               </label>
@@ -74,7 +91,7 @@ export default function RegisterPage() {
                   placeholder="John Doe"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="appearance-none block w-full px-3 py-4 border-none bg-PrimaryGrayDark text-white rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm "
+                  className="appearance-none block w-full px-3 py-4 border-none dark:bg-PrimaryGrayDark dark:text-white text-black bg-TertiaryWhite rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm "
                 />
               </div>
             </div>
@@ -82,7 +99,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-white"
+                className="block text-sm font-medium dark:text-white text-slate-800"
               >
                 Email
               </label>
@@ -96,7 +113,7 @@ export default function RegisterPage() {
                   placeholder="johndoe@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-4 border-none bg-PrimaryGrayDark text-white rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm "
+                  className="appearance-none block w-full px-3 py-4 border-none dark:bg-PrimaryGrayDark dark:text-white text-black bg-TertiaryWhite rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm "
                 />
               </div>
             </div>
@@ -104,7 +121,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-white"
+                className="block text-sm font-medium dark:text-white text-slate-800"
               >
                 Password
               </label>
@@ -118,7 +135,7 @@ export default function RegisterPage() {
                   placeholder="•••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-4 border-none bg-PrimaryGrayDark text-white rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm "
+                  className="appearance-none block w-full px-3 py-4 border-none dark:bg-PrimaryGrayDark dark:text-white text-black bg-TertiaryWhite rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm "
                 />
               </div>
             </div>
