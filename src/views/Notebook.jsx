@@ -19,7 +19,7 @@ const NotebookPage = () => {
   }
 
   return (
-    <div className="flex bg-PrimaryBlack text-gray-200 h-screen">
+    <div className="flex dark:bg-PrimaryBlack bg-PrimaryWhite dark:text-gray-200 text-black h-screen">
       <Sidebar activeNotebookId={setActiveNotebookId} onNotebookSelect={onNotebookSelect} notebooks={notebooks} /> 
         
     </div>

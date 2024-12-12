@@ -6,6 +6,7 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import AuthAxios from "../utils/authaxios";
 import toast from "react-hot-toast";
 import Loader from "../components/loader";
+import { v4 as uuidv4 } from "uuid";
 
 
 export default function Home() {
@@ -30,6 +31,7 @@ export default function Home() {
       const res = await AuthAxios.post(`/chat/update-chat/${id}`, {
         userMessage: message,
       });
+      fetchChats();
       const data = res.data;
       if (data.success) {
         setActiveChat(data.data);
@@ -51,13 +53,12 @@ export default function Home() {
     if (!chatId) return;
     setActiveChat(null); // Clear previous chat
     setMessages(null);
-    setLoading(true);
     try {
       const res = await AuthAxios.get(`/chat/${chatId}`);
       const data = res.data;
       if (data.success) {
-        setActiveChat(data.data);
-        setMessages(data.data.chatHistory);
+        setActiveChat(data.data|| null);
+        setMessages(data.data.chatHistory || []);
       } else {
         toast.error("Failed to fetch chat details");
       }
@@ -88,7 +89,20 @@ export default function Home() {
 
   // Create New Chat
   const createChat = async () => {
-    navigate(`/`); // Navigate to the new chat route
+    const newChatId = await uuidv4(); // Generate a new UUID
+    const newChat = {
+      chatId: newChatId,
+      title: `New Chat ${newChatId.substring(0, 5)}`,
+      subtitle: "This is a new chat",
+    };
+
+    setChats((prevChats) => {
+      const updatedChats = [...prevChats, newChat];
+      return updatedChats;
+    });
+
+    setActiveId(newChatId); // Set it as active
+    navigate(`/${newChatId}`);
   };
   
 

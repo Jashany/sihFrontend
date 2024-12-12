@@ -1,7 +1,5 @@
 import { ChatInput } from "./chat-input";
 import { UserMessage } from "./user-message";
-
-
 import chatTriangler from "../../assets/svgs/chat-triangle.svg";
 import logo from "../../assets/logoSih.svg";
 
@@ -36,40 +34,40 @@ export function ChatArea({ messages, onSend ,handleStateChange}) {
   return (
     <div
       className={`flex  justify-start
-       mb-4 bg-PrimaryGrayDark pt-4 pb-8 pr-10 pl-6 rounded-xl`}
+       mb-4 dark:bg-PrimaryGrayDark bg-SecondaryWhite pt-4 pb-8 pr-10 pl-6 rounded-xl`}
     >
       <div className="max-w-6xl flex ">
         <div className="mt-2.5 mr-1">
-          <img src={logo} alt="logo" width={120} />
+          <img src={logo} alt="logo" width={120} className="bg-DarkBlue dark:bg-PrimaryGrayLight m-2 p-1 rounded-full" />
         </div>
         <div className="flex space-x-3 justify-start items-center">
           <div>
             <div className=" rounded-lg px-4 py-3">
               {sources && (
-                <h1 className="text-PrimaryGrayTextDark">LawVista AI</h1>
+                <h1 className="dark:text-PrimaryGrayTextDark text-DarkBlue">LawVista AI</h1>
               )}
-              <p className="text-gray-200 whitespace-pre-wrap">{content}</p>
+              <p className="dark:text-gray-200 text-PrimaryGrayDark whitespace-pre-wrap">{content}</p>
             </div>
 
             {sources && sources.length > 0 && (
               <div className="mt-4 pl-4">
-                <h4 className="text-gray-400 text-sm mb-2">Sources</h4>
+                <h4 className="dark:text-gray-400 text-DarkBlue text-sm mb-2">Sources</h4>
                 <div className="space-y-2">
                   {sources.map((source, index) => (
                     <div
                       key={index}
-                      className="bg-PrimaryGrayLight rounded-xl p-3 flex justify-between items-center"
+                      className="dark:bg-PrimaryGrayLight bg-[#DBE4FF] rounded-xl p-3 flex justify-between items-center"
                       onClick={()=>stateChange(sourcePath)}
                     >
                       <div>
-                        <h5 className="text-gray-200">{source}</h5>
-                        <p className="text-PrimaryGrayTextDark text-sm">
+                        <h5 className="dark:text-gray-200 text-PrimaryGrayDark">{source}</h5>
+                        <p className="dark:text-PrimaryGrayTextDark text-PrimaryGrayLighter text-sm">
                           {source}
                         </p>
                       </div>
                       <button
                         onClick={source.onView}
-                        className="px-5 py-2 text-sm bg-PrimaryGrayLighter text-gray-200 rounded-xl hover:bg-PrimaryGrayDark/30 transition-colors flex justify-center items-center space-x-1 gap-2 "
+                        className="px-5 py-2 text-sm dark:bg-PrimaryGrayLighter bg-[#8AA6FA] text-gray-200 rounded-xl hover:bg-PrimaryGrayDark/30 transition-colors flex justify-center items-center space-x-1 gap-2 "
                       >
                         <img
                           src={chatTriangler}

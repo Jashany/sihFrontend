@@ -61,14 +61,6 @@ export default function App() {
     fetch();
   }, []);
 
-  // Redirect to a new chat ID if user lands on "/"
-  useEffect(() => {
-    if (location.pathname === "/") {
-      createChat(); // Automatically create a new chat if landing on "/"
-    }
-  }, [location.pathname]);
-
-  // Function to create a new chat
   const createChat = async () => {
     const newChatId = await uuidv4(); // Generate a new UUID
     const newChat = {
@@ -83,8 +75,19 @@ export default function App() {
     });
 
     setActiveId(newChatId); // Set it as active
-    navigate(`/${newChatId}`); // Navigate to the new chat route
+    navigate(`/${newChatId}`);
   };
+  
+
+  // Redirect to a new chat ID if user lands on "/"
+  useEffect(() => {
+    if (location.pathname === "/") {
+      createChat(); // Automatically create a new chat if landing on "/"
+    }
+  }, [location.pathname]);
+
+  // Function to create a new chat
+  
 
   const setActiveChatId = (id) => {
     setActiveId(id);
@@ -105,9 +108,10 @@ export default function App() {
         location.pathname === "/register" || location.pathname === "/login"
       ) && <MainSideBar />}
 
-      <div className="flex w-full">
-        <div className="w-full flex">
+      <div className={location.pathname === "/landing" ? "" : "flex w-full"}>
+        <div className={location.pathname === "/landing" ? "" : "flex w-full"}>
           <Routes>
+            <Route path="/landing" element={<MainHome />} />
             <Route path="/:id" element={<Home />} />
             <Route path="/:id/source/:source" element={<Casepdf />} />
             <Route path="/upload" element={<UploadDocument />} />

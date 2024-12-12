@@ -17,7 +17,7 @@ export default function CaseNotes({ caseNumber, title, initialNotes }) {
   }
 
   return (
-    <div className="bg-PrimaryGrayDark text-white p-6 rounded-lg max-w-4xl">
+    <div className="dark:bg-PrimaryGrayDark bg-PrimaryWhite dark:text-white text-black p-6 rounded-lg max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <span className="text-2xl font-medium text-gray-400">{caseNumber}</span>
