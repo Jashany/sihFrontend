@@ -1,5 +1,6 @@
 import LegalStatures from "./legal-staturers";
 import chatTriangler from "../../assets/svgs/chat-triangle.svg";
+import TextToSpeech from "../../utils/TextToSpeech";
 
 const SummarySection = ({ document }) => {
   return (

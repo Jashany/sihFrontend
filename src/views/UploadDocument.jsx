@@ -7,6 +7,7 @@ import AuthAxios from "../utils/authaxios";
 import { useNavigate, useParams } from "react-router-dom";
 import chatTriangler from "../assets/svgs/chat-triangle.svg";
 import axios from "axios";
+import TextToSpeech from "../utils/TextToSpeech";
 
 const UploadDocument = () => {
   const { id } = useParams();
@@ -188,6 +189,7 @@ const UploadDocument = () => {
           <div className="">
             <h3 className="ml-5 mt-5 text-5xl font-extrabold ">Summary</h3>
             <p className="p-4 dark:bg-PrimaryGrayLight dark:text-white text-black bg-SecondaryWhite h-fit w-[80%] m-5 rounded-md">
+              <div className="mb-5"><TextToSpeech text={summary} /></div>
               {summary}
             </p>
           </div>

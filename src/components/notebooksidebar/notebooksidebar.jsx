@@ -69,7 +69,7 @@ export function Sidebar({ activeNotebookId, notebooks, onNotebookSelect }) {
         </div>
       </div>
 
-      <div className="p-2 space-x-2 flex bg-PrimaryBlue w-[90%] items-center mx-auto rounded-md gap-2 justify-center" onClick={createNotebook}>
+      <div className="p-2 space-x-2 flex bg-PrimaryBlue text-white w-[90%] items-center mx-auto rounded-md gap-2 justify-center" onClick={createNotebook}>
         <p className="h-full flex items-center">
           Create Notebook 
         </p>
