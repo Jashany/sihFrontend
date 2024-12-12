@@ -2,6 +2,7 @@ import { ChatInput } from "./chat-input";
 import { UserMessage } from "./user-message";
 import chatTriangler from "../../assets/svgs/chat-triangle.svg";
 import logo from "../../assets/logoSih.svg";
+import TextToSpeech from "../../utils/TextToSpeech";
 
 
 export function ChatArea({ messages, onSend ,handleStateChange}) {
@@ -44,7 +45,10 @@ export function ChatArea({ messages, onSend ,handleStateChange}) {
           <div>
             <div className=" rounded-lg px-4 py-3">
               {sources && (
-                <h1 className="dark:text-PrimaryGrayTextDark text-DarkBlue">LawVista AI</h1>
+                <div className="flex items-center gap-5">
+                  <h1 className="dark:text-PrimaryGrayTextDark text-DarkBlue">LawVista AI</h1>
+                  <div className="my-4"><TextToSpeech text={content} /></div>
+                </div>
               )}
               <p className="dark:text-gray-200 text-PrimaryGrayDark whitespace-pre-wrap">{content}</p>
             </div>

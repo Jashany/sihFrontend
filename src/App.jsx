@@ -44,6 +44,7 @@ export default function App() {
   const [chats, setChats] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isContrast, setIsContrast] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
@@ -100,18 +101,18 @@ export default function App() {
 
   console.log(location.pathname);
   return (
-    <div className={`${location.pathname === "/landing" ? " " : "flex flex-1 h-[100vh] dark:bg-PrimaryBlack bg-white"}`}>
+    <div className={`${location.pathname === "/landing" ? " " : "flex flex-1 h-[100vh] dark:bg-PrimaryBlack bg-white"} ${isContrast ? "invert contrast-150 saturate-200 brightness-125" : ""}`}>
       <Toaster position="top-right" reverseOrder={false} />
 
       {!(
         location.pathname === "/landing" ||
         location.pathname === "/register" || location.pathname === "/login"
-      ) && <MainSideBar />}
+      ) && <MainSideBar setContrast={setIsContrast} />}
 
       <div className={location.pathname === "/landing" ? "" : "flex w-full"}>
         <div className={location.pathname === "/landing" ? "" : "flex w-full"}>
           <Routes>
-            <Route path="/landing" element={<MainHome />} />
+            <Route path="/landing" element={<MainHome setContrast={setIsContrast} />} />
             <Route path="/:id" element={<Home />} />
             <Route path="/:id/source/:source" element={<Casepdf />} />
             <Route path="/upload" element={<UploadDocument />} />

@@ -83,8 +83,13 @@ export function Sidebar({ activeNotebookId, notebooks, onNotebookSelect, onSearc
         <p>Create Notebook</p>
         <NotebookPen color="white" size={18} />
       </div>
-      <div>
-        <SearchBar onSearch={handleSearch} />
+
+      <div className="p-2 space-x-2 flex bg-PrimaryBlue text-white w-[90%] items-center mx-auto rounded-md gap-2 justify-center" onClick={createNotebook}>
+        <p className="h-full flex items-center">
+          Create Notebook 
+        </p>
+      <NotebookPen color="white" size={18} />
+        
       </div>
       <div className="mt-5 flex-1 flex flex-col  gap-4 overflow-y-auto pl-5 pt-3">
         {notebookList &&
