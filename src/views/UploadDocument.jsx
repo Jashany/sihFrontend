@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import AuthAxios from "../utils/authaxios";
 import { useNavigate, useParams } from "react-router-dom";
 import chatTriangler from "../assets/svgs/chat-triangle.svg";
+import axios from "axios";
 
 const UploadDocument = () => {
   const { id } = useParams();
@@ -17,6 +18,7 @@ const UploadDocument = () => {
   const [judgement, setjudgement] = useState("");
   const [paths, setPaths] = useState([]);
   const [activeDoc, setActiveDoc] = useState(null);
+  const [lsi, setLsi] = useState(null); 
 
   const navigate = useNavigate();
 
@@ -63,13 +65,34 @@ const UploadDocument = () => {
 
         // Automatically set the new document as active
         setActiveDocId(newDoc.id);
-
+        setLoading(true)
         // Make an API call to the backend with the new document details
+        const judgement = await axios.post("http://127.0.0.1:8000/api/judgement/",{
+          input_text: text
+        })
+
+        setLoading(false);
+
+        // Add 1 second to the API duration for smoother transition
+        setLoadingStageTime(duration + 1000);
+
+        const judgementdata = judgement.data?.result || "";
+        setjudgement(judgementdata);
+
+        const lsiRes = await axios.post("http://127.0.0.1:8000/api/judgement/",{
+          input_text: text
+        })
+
+        const lsidata = lsiRes.data?.statues || "";
+        setLsi(lsidata);
+        
+
 
         await AuthAxios.post("http://localhost:3000/api/doc/", {
           documentId: newDoc.id,
           title: newDoc.title,
           summary: generatedSummary,
+          judgement: judgementdata,
           paths: data?.paths || [],
         })
           .then((response) => {

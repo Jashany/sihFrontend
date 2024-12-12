@@ -139,7 +139,7 @@ export default function Home() {
         )}
 
         {loading && (
-          <div className="fixed inset-0 z-50 dark:bg-black bg-white bg-opacity-20 flex justify-center items-center">
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-20 flex justify-center items-center">
             <div className="relative">
               <Loader />
             </div>
