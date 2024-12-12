@@ -5,6 +5,7 @@
 
 *{
   scroll-behavior: smooth;
+  scrollbar-width: none;
 }
 
 input:focus {
@@ -14,6 +15,8 @@ input:focus {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+
 
 /* create global styles */
 :root {

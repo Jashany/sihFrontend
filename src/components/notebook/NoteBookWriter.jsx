@@ -175,7 +175,7 @@ const NotebookWriter = () => {
       {isOpen && (
         <div
           ref={writerRef}
-          className="fixed top-0 right-0 h-screen w-[400px] p-4 dark:bg-PrimaryGrayLighter bg-TertiaryWhite overflow-y-auto"
+          className=" h-screen w-[400px] p-4 dark:bg-PrimaryGrayLighter bg-TertiaryWhite overflow-y-auto"
           style={{
             transform: isOpen ? "translateX(0)" : "translateX(100%)",
             transition: "transform 0.3s ease-in-out",

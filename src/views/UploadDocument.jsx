@@ -24,162 +24,98 @@ const UploadDocument = () => {
 
   const navigate = useNavigate();
 
+  const formatStatutes = (statutes) => {
+    return Object.entries(statutes).map(([key, value]) => ({
+      title: key.replace(/^\*\s*/, ''), // Remove leading asterisks for cleaner titles
+      description: value,
+    }));
+  };
+
+  const newDoc = {
+    id: uuidv4(),
+    title:  "Untitled Document",
+  };
+
   const CallSummarizeApi = async (text) => {
-    setLoading(true);
-    console.log(text);
-
-    const startTime = Date.now(); // Record the start time
-    fetch("http://127.0.0.1:8000/api/summarize/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        input_text: text,
-      }),
-    })
-      .then((response) => {
-        return response.json().then((data) => ({
-          data,
-          duration: Date.now() - startTime, // Calculate duration
-        }));
-      })
-      .then(async ({ data, duration }) => {
-        setLoading(false);
-
-        // Add 1 second to the API duration for smoother transition
-        setLoadingStageTime(duration + 1000);
-
-        const generatedSummary = data?.summary_text || "";
-        setSummary(generatedSummary);
-        setPaths(data?.paths || []);
-        // Extract a few words from the summary for the title
-        const titleSnippet =
-          generatedSummary.split(" ").slice(0, 5).join(" ") + "...";
-
-        // Add the new document to the list
-        const newDoc = {
-          // Generate a new ID
-          id: uuidv4(),
-          title: titleSnippet || "Untitled Document",
-        };
-        setDocs((prevDocs) => [...prevDocs, newDoc]);
-
-        // Automatically set the new document as active
-        setActiveDocId(newDoc.id);
-        setLoading(true);
-        setLoadingLsi(true);
-        const lsiRes = await axios.post("http://127.0.0.1:8000/api/lsi/", {
+    try {
+      setLoading(true);
+      console.log(text);
+  
+      const startTime = Date.now(); // Record the start time
+      const response = await fetch("http://127.0.0.1:8000/api/summarize/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           input_text: text,
-        });
-        setLoadingLsi(false);
-        const lsidata = lsiRes.data?.statues || "";
-        setLsi(lsidata);
-
-        setLoadingJudgement(true);
-        // Make an API call to the backend with the new document details
-        const judgement = await axios.post(
-          "http://127.0.0.1:8000/api/judgement/",
-          {
-            input_text: text,
+        }),
+      });
+  
+      const data = await response.json();
+      const duration = Date.now() - startTime;
+  
+      // Add 1 second to the API duration for smoother transition
+      setLoadingStageTime(duration + 1000);
+  
+      const generatedSummary = data?.summary_text || "";
+      setSummary(generatedSummary);
+      setPaths(data?.paths || []);
+      // Extract a few words from the summary for the title
+      const titleSnippet =
+        generatedSummary.split(" ").slice(0, 5).join(" ") + "...";
+  
+      // Add the new document to the list
+      
+      // setDocs((prevDocs) => [...prevDocs, newDoc]);
+      // setActiveDocId(newDoc.id);
+      
+      // setLoadingJudgement(true);
+      // const judgementRes = await axios.post(
+      //   "http://127.0.0.1:8000/api/judgement/",
+      //   {
+      //     input_text: text,
+      //   }
+      // );
+      // setLoadingJudgement(false);
+      // const judgementdata = judgementRes.data?.result || "";
+      // setjudgement(judgementdata);
+      
+  
+      // Finally, save everything using the /api/doc/ API
+      await AuthAxios.post("http://localhost:3000/api/doc/", {
+        documentId: newDoc.id,
+        title: newDoc.title,
+        summary: generatedSummary,
+        judgement: null,
+        statutes: null,
+        paths: data?.paths || [],
+      })
+        .then((response) => {
+          const backendResponse = response.data; // Access the response data
+          if (backendResponse.success) {
+            console.log("Summary saved successfully");
+          } else {
+            console.error("Failed to save summary:", backendResponse.error);
           }
-        );
-
-        setLoadingJudgement(false);
-
-        const judgementdata = judgement.data?.result || "";
-        setjudgement(judgementdata);
-
-        await AuthAxios.post("http://localhost:3000/api/doc/", {
-          documentId: newDoc.id,
-          title: newDoc.title,
-          summary: generatedSummary,
-          judgement: judgementdata,
-          statutes: lsidata,
-          paths: data?.paths || [],
         })
-          .then((response) => {
-            const backendResponse = response.data; // Access the response data
-            if (backendResponse.success) {
-              console.log("Summary saved successfully");
-            } else {
-              console.error("Failed to save summary:", backendResponse.error);
-            }
-          })
-          .catch((error) => {
-            console.error(
-              "Error while saving summary to backend:",
-              error.message
-            );
-          });
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.error("Error:", error);
-      });
+        .catch((error) => {
+          console.error(
+            "Error while saving summary to backend:",
+            error.message
+          );
+        });
+  
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error("Error:", error);
+    }
   };
 
-  const JudgementPrediction = async (text) => {
-    setLoading(true);
+  
 
-    const startTime = Date.now(); // Record the start time
-    fetch("http://127.0.0.1:8000/api/judgement/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        input_text: text,
-      }),
-    })
-      .then((response) => {
-        return response.json().then((data) => ({
-          data,
-          duration: Date.now() - startTime, // Calculate duration
-        }));
-      })
-      .then(async ({ data, duration }) => {
-        setLoading(false);
-
-        // Add 1 second to the API duration for smoother transition
-        setLoadingStageTime(duration + 1000);
-
-        const generatedSummary = data?.result || "";
-        setjudgement(generatedSummary);
-        // Extract a few words from the summary for the title
-
-        // Automatically set the new document as active
-        setActiveDocId(newDoc.id);
-
-        // Make an API call to the backend with the new document details
-
-        await AuthAxios.post("http://localhost:3000/api/doc/", {
-          documentId: newDoc.id,
-          title: newDoc.title,
-          summary: generatedSummary,
-          paths: data?.paths || [],
-        })
-          .then((response) => {
-            const backendResponse = response.data; // Access the response data
-            if (backendResponse.success) {
-              console.log("Summary saved successfully");
-            } else {
-              console.error("Failed to save summary:", backendResponse.error);
-            }
-          })
-          .catch((error) => {
-            console.error(
-              "Error while saving summary to backend:",
-              error.message
-            );
-          });
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.error("Error:", error);
-      });
-  };
-
+  
   const fetchDocs = async () => {
     setLoading(true);
     try {
@@ -266,22 +202,18 @@ const UploadDocument = () => {
           </div>
         )}
 
+        {/* {loadingJudgement && (
+          <div>
+            <p className="p-20 dark:bg-PrimaryGrayLight dark:text-PrimaryGrayLight text-white bg-SecondaryWhite h-fit w-[80%] m-5 rounded-md">
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ducimus nisi, sunt sint, unde quisquam esse modi totam consequuntur neque animi aperiam harum accusantium ipsa dolor ad recusandae eveniet voluptates facilis?
+            </p>
+          </div>
+        )} */}
+
         {!loadingLsi && lsi && (
           <div className="">
-            <h3 className="ml-5 mt-5 text-5xl font-extrabold">
-              Laws Applicable
-            </h3>
-            {Object.keys(lsi).map((key, index) => (
-              <div
-                key={index}
-                className="p-4 dark:bg-PrimaryGrayLight dark:text-white text-black bg-SecondaryWhite h-fit w-[80%] m-5 rounded-md"
-              >
-                <h4 className="text-2xl font-bold">{key}</h4>
-                <p className="mt-2">
-                  {lsi[key].description || "No description available"}
-                </p>
-              </div>
-            ))}
+
+          {lsi &&  console.log(lsi)}
           </div>
         )}
 
@@ -327,3 +259,27 @@ const UploadDocument = () => {
 };
 
 export default UploadDocument;
+
+const StatutesDisplay = ({ statutes }) => {
+  return (
+    <div className="p-4 bg-PrimaryGrayLight rounded-md w-4/5">
+      <h3 className="text-2xl font-bold mb-4">Laws Applicable</h3>
+      <div className="space-y-4">
+        {statutes.map((statute, index) => (
+          <div
+            key={index}
+            className="p-4 bg-white dark:bg-gray-700 shadow-md rounded-md"
+          >
+            <h4 className="text-lg font-semibold text-blue-600 mb-2">
+              {statute.title}
+            </h4>
+            <p className="text-gray-700 dark:text-gray-300">
+              {statute.description}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+

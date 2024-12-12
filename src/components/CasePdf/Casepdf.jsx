@@ -65,12 +65,12 @@ const renderSelectedContent = () => {
         hasContent = true;
         return (
           <div
-            className="bg-PrimaryGrayLight text-white p-4 rounded-md mb-4"
+            className="dark:bg-PrimaryGrayLight bg-TertiaryWhite dark:text-white text-black p-4 rounded-md mb-4"
             key={section}
             style={{ marginTop: "20px" }}
             
           >
-            <h3 className="text-white text-xl">{section}</h3>
+            <h3 className="dark:text-white text-black font-semibold text-xl">{section}</h3>
             {content}
           </div>
         );
@@ -96,23 +96,23 @@ const renderSelectedContent = () => {
   const isAuthorFound = caseData?.data?.Judgment_Author !== "Not Found";
 
   return (
-    <div className="flex-1 flex flex-col max-h-[100vh] overflow-scroll  bg-PrimaryBlack items-center py-8" style={{
+    <div className="flex-1 flex flex-col max-h-[100vh] overflow-scroll  dark:bg-PrimaryBlack bg-PrimaryWhite items-center py-8" style={{
       scrollbarWidth: "none",
     }}>
-      <h2 className="text-white">
+      <h2 className="dark:text-white text-black">
         {caseData?.data?.Court_Name || "Loading..."}
       </h2>
-      <h1 className="text-white my-4 text-2xl font-bold">
+      <h1 className="dark:text-white text-black my-4 text-2xl font-bold">
         {caseData?.data?.Case_Title || "Loading..."}
       </h1>
-      <h3 className="text-[#787878]">
+      <h3 className="dark:text-[#787878] text-PrimaryGrayDark">
         Author: {isAuthorFound ? caseData?.data?.Judgment_Author : "Not Found"}
       </h3>
-      <h4 className="text-[#787878]">
+      <h4 className="dark:text-[#787878] text-PrimaryGrayLight">
         Bench: {isBenchFound ? caseData?.data?.Bench : "Not Found"}
       </h4>
       {isCitations && (
-        <h4 className="text-[#787878]">
+        <h4 className="dark:text-[#787878] text-PrimaryGrayDark">
           Citations: {caseData?.data?.Citations || "Loading..."}
         </h4>
       )}
