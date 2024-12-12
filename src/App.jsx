@@ -57,14 +57,6 @@ export default function App() {
     fetch();
   }, []);
 
-  // Redirect to a new chat ID if user lands on "/"
-  useEffect(() => {
-    if (location.pathname === "/") {
-      createChat(); // Automatically create a new chat if landing on "/"
-    }
-  }, [location.pathname]);
-
-  // Function to create a new chat
   const createChat = async () => {
     const newChatId = await uuidv4(); // Generate a new UUID
     const newChat = {
@@ -79,8 +71,19 @@ export default function App() {
     });
 
     setActiveId(newChatId); // Set it as active
-    navigate(`/${newChatId}`); // Navigate to the new chat route
+    navigate(`/${newChatId}`);
   };
+  
+
+  // Redirect to a new chat ID if user lands on "/"
+  useEffect(() => {
+    if (location.pathname === "/") {
+      createChat(); // Automatically create a new chat if landing on "/"
+    }
+  }, [location.pathname]);
+
+  // Function to create a new chat
+  
 
   const setActiveChatId = (id) => {
     setActiveId(id);

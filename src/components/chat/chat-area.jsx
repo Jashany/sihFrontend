@@ -1,7 +1,5 @@
 import { ChatInput } from "./chat-input";
 import { UserMessage } from "./user-message";
-
-
 import chatTriangler from "../../assets/svgs/chat-triangle.svg";
 import logo from "../../assets/logoSih.svg";
 
