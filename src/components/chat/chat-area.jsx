@@ -4,6 +4,8 @@ import chatTriangler from "../../assets/svgs/chat-triangle.svg";
 import logo from "../../assets/logoSih.svg";
 import { useState,useEffect } from "react";
 import { translateToLanguage } from "../../services/LanguageEnglish";
+import TextToSpeech from "../../utils/TextToSpeech";
+
 
 export function ChatArea({ messages, onSend ,handleStateChange}) {
   return (
@@ -65,7 +67,10 @@ function Message({ content, sources, stateChange }) {
           <div>
             <div className="rounded-lg px-4 py-3">
               {sources && (
-                <h1 className="dark:text-PrimaryGrayTextDark text-DarkBlue">LawVista AI</h1>
+                <div className="flex items-center gap-5">
+                  <h1 className="dark:text-PrimaryGrayTextDark text-DarkBlue">LawVista AI</h1>
+                  <div className="my-4"><TextToSpeech text={content} /></div>
+                </div>
               )}
               <p className="dark:text-gray-200 text-PrimaryGrayDark whitespace-pre-wrap">
                 {loading ? "Translating..." : translatedContent} {/* Show loading text or translated content */}

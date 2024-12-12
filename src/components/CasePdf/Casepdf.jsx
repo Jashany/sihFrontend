@@ -1,6 +1,9 @@
+
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { translateToLanguage } from "../../services/LanguageEnglish"; // Assuming you have this service
+import Summary from "../summary/SummarySection";
 
 const Casepdf = () => {
   const [caseData, setCaseData] = useState(null);
@@ -8,7 +11,18 @@ const Casepdf = () => {
   const [selectedSections, setSelectedSections] = useState([]); // Tracks selected sections
   const [translatedContent, setTranslatedContent] = useState({}); // To store translated content
 
+  const [text, setText] = useState("");
   const { source } = useParams();
+  const [summary, setSummary] = useState(false);
+
+  useEffect(()=>{
+    const fetchText = async () => {
+      const response = await axios.get(`https://pub-d58fae2843f34cfcbf2cfb0606b5efaf.r2.dev/judgmenttxts/${source}.txt`);
+      const data = response.data;
+      setText(data);
+    }
+    fetchText();
+  },[summary])
 
   // Fetch data when component mounts or source changes
   useEffect(() => {
@@ -70,11 +84,12 @@ const Casepdf = () => {
     );
   };
 
+  // Function to render selected content with headings
   const renderSelectedContent = () => {
     if (selectedSections.length === 0) {
       return null;
     }
-  
+
     let hasContent = false;
     const contentSections = selectedSections.map((section) => {
       let content;
@@ -92,7 +107,7 @@ const Casepdf = () => {
           <p key={index}>{conclusion || "No conclusion provided"}</p>  // Default content if conclusion is missing
         ));
       }
-  
+
       if (content && content.length > 0) {
         hasContent = true;
         return (
@@ -101,26 +116,29 @@ const Casepdf = () => {
             key={section}
             style={{ marginTop: "20px" }}
           >
-            <h3 className="dark:text-white text-black font-semibold text-xl">{section}</h3>
+            <h3 className="dark:text-white text-black font-semibold text-xl">
+              {section}
+            </h3>
             {content}
           </div>
         );
       }
       return null;
     });
-  
+
     return (
       <>
         {contentSections}
-        {!hasContent && selectedSections.length !== 0 && (
-          <p style={{ color: "white", marginTop: "20px" }}>
-            No content available for the selected sections.
-          </p>
-        )}
+        {!hasContent &&
+          selectedSections.length !=
+            0(
+              <p style={{ color: "white", marginTop: "20px" }}>
+                No content available for the selected sections.
+              </p>
+            )}
       </>
     );
   };
-  
 
   const isCitations = caseData?.data?.Citations !== "Not Found";
   const isBenchFound = caseData?.data?.Bench !== "Not Found";
@@ -179,6 +197,12 @@ const Casepdf = () => {
         )}
       </div>
 
+        
+
+      <button className={`bg-PrimaryBlue text-white px-12 hover:bg-blue-700 py-3 rounded-lg ${summary ? "hidden" : ""}`}
+        onClick={() => setSummary(true)}
+      
+      >Generate Summary</button>
       <div style={{ marginTop: "20px", width: "80%" }}>
         {renderSelectedContent()}
       </div>
