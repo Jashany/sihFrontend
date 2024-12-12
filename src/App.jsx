@@ -108,9 +108,10 @@ export default function App() {
         location.pathname === "/register" || location.pathname === "/login"
       ) && <MainSideBar />}
 
-      <div className="flex w-full">
-        <div className="w-full flex">
+      <div className={location.pathname === "/landing" ? "" : "flex w-full"}>
+        <div className={location.pathname === "/landing" ? "" : "flex w-full"}>
           <Routes>
+            <Route path="/landing" element={<MainHome />} />
             <Route path="/:id" element={<Home />} />
             <Route path="/:id/source/:source" element={<Casepdf />} />
             <Route path="/upload" element={<UploadDocument />} />

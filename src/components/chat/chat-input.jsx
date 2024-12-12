@@ -18,11 +18,11 @@ export function ChatInput({ onSend }) {
           name="message"
           type="text"
           placeholder="Ask your query..."
-          className="w-full bg-PrimaryGrayDark text-PrimaryGrayTextDark rounded-lg pl-4 pr-12 py-5  "
+          className="w-full dark:bg-PrimaryGrayDark bg-TertiaryWhite dark:text-PrimaryGrayTextDark text-PrimaryGrayDark rounded-lg pl-4 pr-12 py-5  "
         />
         <button
           type="submit"
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text- transition-colors bg-PrimaryBlue rounded-lg"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text- transition-colors dark:bg-PrimaryBlue bg-DarkBlue rounded-lg"
         >
           <img src={chatTriangler} alt="chat" />
         </button>

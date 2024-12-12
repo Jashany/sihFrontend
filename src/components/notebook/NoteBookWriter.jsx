@@ -166,26 +166,26 @@ const NotebookWriter = () => {
     <div>
       <button
         onClick={toggleDrawer}
-        className="fixed top-4 right-4 px-4 py-2 rounded text-PrimaryLight flex gap-3 items-center"
+        className="fixed top-4 right-4 px-4 py-2 rounded dark:text-PrimaryLight text-PrimaryBlack flex gap-3 items-center"
       >
         Add Notes
-        <Pencil size={18} color="white" />
+        <Pencil size={18} color="gray" />
       </button>
 
       {isOpen && (
         <div
           ref={writerRef}
-          className="fixed top-0 right-0 h-screen w-[400px] p-4 bg-PrimaryGrayLighter overflow-y-auto"
+          className="fixed top-0 right-0 h-screen w-[400px] p-4 dark:bg-PrimaryGrayLighter bg-TertiaryWhite overflow-y-auto"
           style={{
             transform: isOpen ? "translateX(0)" : "translateX(100%)",
             transition: "transform 0.3s ease-in-out",
             zIndex: 50,
           }}
         >
-          <h2 className="text-xl text-PrimaryLight mb-4">Notebook Writer</h2>
+          <h2 className="text-xl dark:text-PrimaryLight text-PrimaryBlack mb-4">Notebook Writer</h2>
 
           <select
-            className="w-full p-2 mb-4 bg-PrimaryGrayLight text-PrimaryLight"
+            className="w-full p-2 mb-4 dark:bg-PrimaryGrayLight bg-SecondaryWhite dark:text-PrimaryLight text-black"
             onChange={(e) => handleNotebookSelect(e.target.value)}
             value={selectedNotebook || ""}
           >
@@ -202,7 +202,7 @@ const NotebookWriter = () => {
           {segments.map((segment) => (
             <div
               key={segment.segmentId}
-              className="bg-PrimaryGrayLight p-4 mb-4 rounded shadow"
+              className="bg-PrimaryBlack p-4 mb-4 rounded shadow"
             >
               {editingSegment === segment.segmentId ? (
                 <>
@@ -252,7 +252,7 @@ const NotebookWriter = () => {
           )}
 
           {isAddingSegment && (
-            <div className="mt-4 bg-PrimaryGrayLight p-4 rounded shadow">
+            <div className="mt-4 dark:bg-PrimaryGrayLight bg-[#8AA6FA] p-4 rounded shadow">
               <textarea
                 value={newSegmentContent}
                 onChange={(e) => {
