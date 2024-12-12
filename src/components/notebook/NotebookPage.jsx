@@ -71,7 +71,7 @@ const NoteBookMain = () => {
   return (
     <div className="flex w-full">
       <Sidebar />
-      <div className="bg-PrimaryBlack w-full p-6">
+      <div className="bg-PrimaryBlack w-[60%] p-6">
         <input
           type="text"
           value={title}
@@ -84,14 +84,14 @@ const NoteBookMain = () => {
         </div>
         <div>
         {data?.segments && data?.segments?.length > 0 ? (
-            <div>
+            <div className="flex flex-col gap-5">
             {data?.segments?.map((segment) => (
-              <div key={segment.id} className="bg-PrimaryGrayDark p-4">
-                <pre className="text-lg text-gray-200 font-semibold">
+              <div key={segment.id} className="bg-PrimaryGrayDark p-4 flex justify-between items-center">
+                <pre className="text-sm text-gray-200 ">
                   {segment.notes}
                 </pre>
                 {segment.link && (
-                   <p onClick={()=>{
+                   <p className="bg-PrimaryGrayLighter px-3 py-2 rounded-xl text-PrimaryLight" onClick={()=>{
                      navigate(segment.link);
                    }}>
                     View Analysis

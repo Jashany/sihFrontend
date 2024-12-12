@@ -7,7 +7,7 @@ export function Sidebar({ activeDocId, docs, onDocSelect, handlePdfText }) {
   const navigate = useNavigate();
 
   return (
-    <div className="w-[350px] bg-PrimaryGrayDark min-h-screen ">
+    <div className="w-[400px] bg-PrimaryGrayDark min-h-screen ">
       <div className="p-4">
         <div className="flex items-center space-x-2">
           <h1 className="text-gray-200 font-semibold">Your Documents</h1>

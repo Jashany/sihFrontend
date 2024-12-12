@@ -142,7 +142,7 @@ const NotebookWriter = () => {
     )
       .then((response) => response.json())
       .then((data) => {
-        setSegments([...segments, data.data]);
+        setSegments(data.data.segments);
         setIsAddingSegment(false);
         setNewSegmentContent("");
       })
@@ -175,7 +175,12 @@ const NotebookWriter = () => {
       {isOpen && (
         <div
           ref={writerRef}
-          className="h-[100vh] w-[400px] p-4 transform transition-transform duration-500 translate-x-0 bg-PrimaryGrayLighter"
+          className="fixed top-0 right-0 h-screen w-[400px] p-4 bg-PrimaryGrayLighter overflow-y-auto"
+          style={{
+            transform: isOpen ? "translateX(0)" : "translateX(100%)",
+            transition: "transform 0.3s ease-in-out",
+            zIndex: 50,
+          }}
         >
           <h2 className="text-xl text-PrimaryLight mb-4">Notebook Writer</h2>
 
@@ -192,9 +197,6 @@ const NotebookWriter = () => {
                 {notebook?.title}
               </option>
             ))}
-            <option value="add-project" onClick={handleAddProject}>
-              Add New Project
-            </option>
           </select>
 
           {segments.map((segment) => (
@@ -240,19 +242,25 @@ const NotebookWriter = () => {
               )}
             </div>
           ))}
-          <button
-            className="mt-2 text-sm font-medium text-blue-500 hover:underline"
-            onClick={() => handleAddSegment()}
-          >
-            Add Segment
-          </button>
+          {selectedNotebook && (
+            <button
+              className="mt-2 text-sm font-medium text-blue-500 hover:underline"
+              onClick={() => handleAddSegment()}
+            >
+              Add Segment
+            </button>
+          )}
 
           {isAddingSegment && (
             <div className="mt-4 bg-PrimaryGrayLight p-4 rounded shadow">
               <textarea
                 value={newSegmentContent}
-                onChange={(e) => setNewSegmentContent(e.target.value)}
-                className="w-full p-3 text-sm text-PrimaryLight bg-PrimaryDark border border-gray-600 rounded focus:outline-none focus:ring focus:ring-blue-500"
+                onChange={(e) => {
+                  console.log("New content:", e.target.value); // Debug log
+                  setNewSegmentContent(e.target.value);
+                }}
+                className="w-full p-3 text-sm bg-PrimaryDark border border-gray-600 rounded 
+    focus:outline-none focus:ring focus:ring-blue-500 text-PrimaryGrayLight" // Changed text color to white
                 rows={4}
                 placeholder="Enter notes for the new segment"
               />

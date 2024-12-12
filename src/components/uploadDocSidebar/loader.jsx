@@ -30,7 +30,7 @@ const Loader = ({ loadingStageTime }) => {
       <div className="flex flex-col m-auto bg-PrimaryGrayDark px-20 py-10 w-1/2 items-center rounded-2xl">
         <div className="flex flex-col items-center">
           <img src={ai} width={50} height={50} alt="Generating" />
-          <h1 className="text-4xl">Generating Summary</h1>
+          <h1 className="text-xl">Generating Summary</h1>
         </div>
         <div>
           <div className="flex gap-16 mt-5">

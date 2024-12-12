@@ -11,7 +11,7 @@ export function Sidebar({
   createNewChat,
 }) {
   return (
-    <div className="w-[350px] bg-PrimaryGrayDark h-screen flex flex-col">
+    <div className="min-w-[400px] w-[400px] bg-PrimaryGrayDark h-screen flex flex-col">
       {/* Header Section */}
       <div className="p-4">
         <div className="flex items-center space-x-2">
