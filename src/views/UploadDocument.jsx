@@ -220,7 +220,7 @@ const UploadDocument = () => {
         {paths && paths.length > 0 && (
           <div className="mt-4 pl-4">
             <h4 className="dark:text-gray-400 text-DarkBlue text-sm mb-2">
-              Sources
+              Prior Relevant Cases
             </h4>
             <div className="space-y-2">
               {paths.map((path, index) => (

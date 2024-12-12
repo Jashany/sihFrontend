@@ -7,8 +7,9 @@ import { useEffect, useState } from "react";
 import AuthAxios from "../../utils/authaxios";
 import toast from "react-hot-toast";
 import { MoonIcon, SunIcon } from "lucide-react";
+import AccessibilityButton from "../AccessibilityButton";
 
-const MainSideBar = () => {
+const MainSideBar = ({setContrast}) => {
   const location = useLocation();
   const router = useNavigate();
 
@@ -113,6 +114,10 @@ const MainSideBar = () => {
           <button onClick={darkModeHandler}>
             {dark ? <MoonIcon /> : <SunIcon />}
           </button>
+        </div>
+
+        <div>
+          <AccessibilityButton setIsContrast={setContrast} white={true} />
         </div>
 
         <div

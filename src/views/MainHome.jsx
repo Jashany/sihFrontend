@@ -9,8 +9,9 @@ import textBox from "../assets/svgs/textBox.svg";
 import bentoGrid from "../assets/svgs/bentoGrid.svg";
 import auction from "../assets/svgs/auction.svg";
 import { useNavigate } from "react-router-dom";
+import AccessibilityButton from "../components/AccessibilityButton";
 
-const MainHome = () => {
+const MainHome = ({setContrast}) => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
@@ -18,7 +19,7 @@ const MainHome = () => {
   };
 
   return (
-    <div>
+    <>
       <nav className="flex items-center flex-evenly justify-around py-4 drop-shadow-md bg-[#F4F6FC]/95 sticky top-0 z-10">
         <img src={MainLogo} />
         <div className="flex gap-16">
@@ -29,6 +30,7 @@ const MainHome = () => {
         <div className="flex gap-10 items-center">
           <button onClick={handleLogin}>Login</button>
           <Button showIcon={false} />
+          <AccessibilityButton setIsContrast={setContrast} />
         </div>
       </nav>
       <main className="bg-[#F4F6FC] w-full min-h-full pb-14">
@@ -89,7 +91,7 @@ const MainHome = () => {
         <img src={auction} />
         <Button showIcon={true} classes="h-11" />
       </footer>
-    </div>
+    </>
   );
 };
 
