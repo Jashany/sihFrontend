@@ -10,30 +10,16 @@ import { MoonIcon, SunIcon } from "lucide-react";
 
 const MainSideBar = () => {
   const location = useLocation();
-  const router = useNavigate();
+  const [active, setActive] = useState(location.pathname);
 
-  // Initialize dark mode state from localStorage
-  const [dark, setDark] = useState(() => {
-    const savedTheme = localStorage.getItem("theme");
-    return savedTheme === "dark";
-  });
+  const mode = localStorage.getItem("mode");
 
-  // Effect to apply theme on component mount and when dark state changes
   useEffect(() => {
-    if (dark) {
-      document.body.classList.remove("light");
-      document.body.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.body.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [dark]);
+    setActive(location.pathname);
+    console.log(location.pathname);
+  }, [location.pathname]);
 
-  // Theme toggle handler
-  const darkModeHandler = () => {
-    setDark(prevDark => !prevDark);
-  };
+  const router = useNavigate();
 
   const isActive = (path) => location.pathname.startsWith(path);
 
@@ -108,12 +94,17 @@ const MainSideBar = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-5">
-        <div className="text-white">
-          <button onClick={darkModeHandler}>
-            {dark ? <MoonIcon /> : <SunIcon />}
-          </button>
-        </div>
+      <div>
+
+            <div>
+              {
+                mode === "dark" ? <ToggleRight size={30} color="white" onClick={async () => {
+                  await localStorage.setItem("mode", "light");
+                }} /> : <ToggleLeft size={30} color="white" onClick={async () => {
+                  await localStorage.setItem("mode", "dark");
+                }} />
+              }
+            </div>
 
         <div
           onClick={async () => {
