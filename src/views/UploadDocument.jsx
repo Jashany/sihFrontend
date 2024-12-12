@@ -18,13 +18,15 @@ const UploadDocument = () => {
   const [judgement, setjudgement] = useState("");
   const [paths, setPaths] = useState([]);
   const [activeDoc, setActiveDoc] = useState(null);
-  const [lsi, setLsi] = useState(null); 
+  const [lsi, setLsi] = useState(null);
+  const [loadingLsi, setLoadingLsi] = useState(false);
+  const [loadingJudgement, setLoadingJudgement] = useState(false);
 
   const navigate = useNavigate();
 
   const CallSummarizeApi = async (text) => {
-    setLoading(true); 
-    console.log(text)
+    setLoading(true);
+    console.log(text);
 
     const startTime = Date.now(); // Record the start time
     fetch("http://127.0.0.1:8000/api/summarize/", {
@@ -65,34 +67,35 @@ const UploadDocument = () => {
 
         // Automatically set the new document as active
         setActiveDocId(newDoc.id);
-        setLoading(true)
+        setLoading(true);
+        setLoadingLsi(true);
+        const lsiRes = await axios.post("http://127.0.0.1:8000/api/lsi/", {
+          input_text: text,
+        });
+        setLoadingLsi(false);
+        const lsidata = lsiRes.data?.statues || "";
+        setLsi(lsidata);
+
+        setLoadingJudgement(true);
         // Make an API call to the backend with the new document details
-        const judgement = await axios.post("http://127.0.0.1:8000/api/judgement/",{
-          input_text: text
-        })
+        const judgement = await axios.post(
+          "http://127.0.0.1:8000/api/judgement/",
+          {
+            input_text: text,
+          }
+        );
 
-        setLoading(false);
-
-        // Add 1 second to the API duration for smoother transition
-        setLoadingStageTime(duration + 1000);
+        setLoadingJudgement(false);
 
         const judgementdata = judgement.data?.result || "";
         setjudgement(judgementdata);
-
-        const lsiRes = await axios.post("http://127.0.0.1:8000/api/judgement/",{
-          input_text: text
-        })
-
-        const lsidata = lsiRes.data?.statues || "";
-        setLsi(lsidata);
-        
-
 
         await AuthAxios.post("http://localhost:3000/api/doc/", {
           documentId: newDoc.id,
           title: newDoc.title,
           summary: generatedSummary,
           judgement: judgementdata,
+          statutes: lsidata,
           paths: data?.paths || [],
         })
           .then((response) => {
@@ -116,7 +119,6 @@ const UploadDocument = () => {
       });
   };
 
-  
   const JudgementPrediction = async (text) => {
     setLoading(true);
 
@@ -145,7 +147,6 @@ const UploadDocument = () => {
         const generatedSummary = data?.result || "";
         setjudgement(generatedSummary);
         // Extract a few words from the summary for the title
-        
 
         // Automatically set the new document as active
         setActiveDocId(newDoc.id);
@@ -202,12 +203,11 @@ const UploadDocument = () => {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     fetchDocs(); // Automatically fetches and sets the first document as active
   }, []);
-  
+
   useEffect(() => {
     if (activeDocId) {
       const fetchActiveDoc = async () => {
@@ -227,7 +227,7 @@ const UploadDocument = () => {
           setLoading(false);
         }
       };
-  
+
       fetchActiveDoc();
     }
   }, [activeDocId]);
@@ -235,17 +235,15 @@ const UploadDocument = () => {
   return (
     <div className=" dark:bg-PrimaryBlack dark:text-gray-200 bg-PrimaryWhite text-black min-h-screen w-full flex justify-center   ">
       <div className="min-h-screen">
-
-      <Sidebar
-        activeDocId={activeDocId}
-        docs={docs}
-        onDocSelect={(docId) => setActiveDocId(docId)} // Pass the selected document ID
-        handlePdfText={(text)=>{
-          CallSummarizeApi(text);
-          
-        }}
+        <Sidebar
+          activeDocId={activeDocId}
+          docs={docs}
+          onDocSelect={(docId) => setActiveDocId(docId)} // Pass the selected document ID
+          handlePdfText={(text) => {
+            CallSummarizeApi(text);
+          }}
         />
-        </div>
+      </div>
 
       {loading && <Loader loadingStageTime={loadingStageTime} />}
 
@@ -259,7 +257,7 @@ const UploadDocument = () => {
           </div>
         )}
 
-        {!loading && judgement && (
+        {!loadingJudgement && judgement && (
           <div className="">
             <h3 className="ml-5 mt-5 text-5xl font-extrabold ">Judgement</h3>
             <p className="p-4 dark:bg-PrimaryGrayLight dark:text-white text-black bg-SecondaryWhite h-fit w-[80%] m-5 rounded-md">
@@ -268,10 +266,30 @@ const UploadDocument = () => {
           </div>
         )}
 
+        {!loadingLsi && lsi && (
+          <div className="">
+            <h3 className="ml-5 mt-5 text-5xl font-extrabold">
+              Laws Applicable
+            </h3>
+            {Object.keys(lsi).map((key, index) => (
+              <div
+                key={index}
+                className="p-4 dark:bg-PrimaryGrayLight dark:text-white text-black bg-SecondaryWhite h-fit w-[80%] m-5 rounded-md"
+              >
+                <h4 className="text-2xl font-bold">{key}</h4>
+                <p className="mt-2">
+                  {lsi[key].description || "No description available"}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
 
         {paths && paths.length > 0 && (
           <div className="mt-4 pl-4">
-            <h4 className="dark:text-gray-400 text-DarkBlue text-sm mb-2">Sources</h4>
+            <h4 className="dark:text-gray-400 text-DarkBlue text-sm mb-2">
+              Sources
+            </h4>
             <div className="space-y-2">
               {paths.map((path, index) => (
                 <div
