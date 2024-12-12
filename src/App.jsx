@@ -101,7 +101,7 @@ export default function App() {
 
   console.log(location.pathname);
   return (
-    <div className={`${location.pathname === "/landing" ? " " : "flex flex-1 h-[100vh] dark:bg-PrimaryBlack bg-white"} ${isContrast ? "invert contrast-150 saturate-200" : ""}`}>
+    <div className={`${location.pathname === "/landing" ? " " : "flex flex-1 h-[100vh] dark:bg-PrimaryBlack bg-white"} ${isContrast ? "invert contrast-150 saturate-200 brightness-125" : ""}`}>
       <Toaster position="top-right" reverseOrder={false} />
 
       {!(
