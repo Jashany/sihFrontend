@@ -97,7 +97,7 @@ export default function App() {
 
   console.log(location.pathname);
   return (
-    <div className={`${location.pathname === "/landing" ? " " : "flex flex-1 h-[100vh] bg-PrimaryBlack "}`}>
+    <div className={`${location.pathname === "/landing" ? " " : "flex flex-1 h-[100vh] dark:bg-PrimaryBlack bg-white"}`}>
       <Toaster position="top-right" reverseOrder={false} />
 
       {!(

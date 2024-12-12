@@ -1,6 +1,5 @@
 .main{
     min-width: 70px;
-    background-color: var(--PrimaryBlack);
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -6,14 +6,13 @@ import { User, MessageCircle, Upload, NotebookPen } from "lucide-react";
 import { useEffect, useState } from "react";
 import AuthAxios from "../../utils/authaxios";
 import toast from "react-hot-toast";
-import {ToggleRight, ToggleLeft} from 'lucide-react';
-
+import { MoonIcon, SunIcon } from "lucide-react";
 
 const MainSideBar = () => {
   const location = useLocation();
   const [active, setActive] = useState(location.pathname);
 
-  const [mode, setMode] = useState(localStorage.getItem("mode") || "light");
+  const mode = localStorage.getItem("mode");
 
   useEffect(() => {
     setActive(location.pathname);
@@ -22,11 +21,10 @@ const MainSideBar = () => {
 
   const router = useNavigate();
 
- 
   const isActive = (path) => location.pathname.startsWith(path);
 
   return (
-    <div className={styles.main}>
+    <div className="min-w-[70px] dark:bg-PrimaryBlack bg-DarkBlue flex flex-col items-center py-4 justify-between">
       <div>
         <img
           src={logo}
@@ -80,8 +78,6 @@ const MainSideBar = () => {
             />
           </div>
 
-
-
           {/* Notebook */}
           <div
             className={`${styles.logoDiv} ${
@@ -104,10 +100,8 @@ const MainSideBar = () => {
               {
                 mode === "dark" ? <ToggleRight size={30} color="white" onClick={async () => {
                   await localStorage.setItem("mode", "light");
-                  setMode("light");
                 }} /> : <ToggleLeft size={30} color="white" onClick={async () => {
                   await localStorage.setItem("mode", "dark");
-                  setMode("dark");
                 }} />
               }
             </div>
