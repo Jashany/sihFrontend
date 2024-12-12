@@ -7,15 +7,23 @@ import { useEffect, useState } from "react";
 import AuthAxios from "../../utils/authaxios";
 import toast from "react-hot-toast";
 import { MoonIcon, SunIcon } from "lucide-react";
+import { Languages } from "lucide-react";
 
 const MainSideBar = () => {
   const location = useLocation();
   const router = useNavigate();
+  const [showSource, setShowSource] = useState(false);
 
   // Initialize dark mode state from localStorage
   const [dark, setDark] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
     return savedTheme === "dark";
+  });
+
+  // Language state from localStorage or default to 'English'
+  const [language, setLanguage] = useState(() => {
+    const savedLanguage = localStorage.getItem("targetLanguage");
+    return savedLanguage || "English"; // Default to English
   });
 
   // Effect to apply theme on component mount and when dark state changes
@@ -30,12 +38,49 @@ const MainSideBar = () => {
     }
   }, [dark]);
 
+  // Effect to apply language change when it updates
+  useEffect(() => {
+    localStorage.setItem("targetLanguage", language);
+  }, [language]);
+
   // Theme toggle handler
   const darkModeHandler = () => {
-    setDark(prevDark => !prevDark);
+    setDark((prevDark) => !prevDark);
   };
 
   const isActive = (path) => location.pathname.startsWith(path);
+
+  const handleLanguageChange = (lang) => {
+    setLanguage(lang); // Update the language state
+    console.log("Language changed to:", lang);
+    
+    // Set the language in localStorage
+    localStorage.setItem("targetLanguage", lang);
+
+    // Refresh the page to apply the changes
+    window.location.reload();
+    setShowSource(false); // Close the language dropdown
+  };
+
+  const languageOptions = {
+    en: "English",
+    hi: "Hindi",
+    ta: "Tamil",
+    te: "Telugu",
+    bn: "Bengali",
+    mr: "Marathi",
+    //add more languages and short codes here
+    pu : "Punjabi",
+    gu : "Gujarati",
+    or : "Oriya",
+    as : "Assamese",
+    ka : "Kannada",
+    ma : "Malayalam",
+    ur : "Urdu",
+    sa : "Sanskrit",
+    ne : "Nepali",
+    bh : "Bhojpuri",
+  };
 
   return (
     <div className="min-w-[70px] dark:bg-PrimaryBlack bg-DarkBlue flex flex-col items-center py-4 justify-between">
@@ -46,6 +91,34 @@ const MainSideBar = () => {
           className={styles.logo}
           alt=""
         />
+        <div onClick={() => setShowSource(!showSource)}>
+          <Languages
+            size={30}
+            color="white"
+            style={{
+              marginTop: "20px",
+              marginLeft: "5px",
+            }}
+          />
+        </div>
+
+        {/* Language Dropdown */}
+        {showSource && (
+          <div className="bg-white text-black absolute p-3 mt-2 rounded-xl shadow-lg w-32 z-10">
+            <ul>
+              {Object.entries(languageOptions).map(([code, name]) => (
+                <li
+                  key={code}
+                  className="cursor-pointer py-1 px-2 hover:bg-gray-200 rounded"
+                  onClick={() => handleLanguageChange(name)} // Use language name for the selection
+                >
+                  {name}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div
           style={{
             marginTop: "100px",
@@ -108,6 +181,7 @@ const MainSideBar = () => {
           </div>
         </div>
       </div>
+
       <div className="flex flex-col gap-5">
         <div className="text-white">
           <button onClick={darkModeHandler}>
