@@ -16,7 +16,7 @@ export const translateToEnglishV2 = async (text, apiKey) => {
       params: {
         q: text,
         target: 'en', // Translate to English
-        key: apiKey,
+        key: 'AIzaSyCTxPR4C6-5HNRhvRG5k4dCF-gCRlm72Vc',
       },
     });
 
@@ -92,7 +92,7 @@ export const translateToEnglishV2 = async (text, apiKey) => {
       params: {
         q: text,             // Input text
         target: languageCode, // Target language code
-        key: api-key,         // Your API key
+        key: "AIzaSyCTxPR4C6-5HNRhvRG5k4dCF-gCRlm72Vc",         // Your API key
       },
     });
 

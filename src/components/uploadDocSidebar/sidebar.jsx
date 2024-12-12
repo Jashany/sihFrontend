@@ -34,7 +34,7 @@ export function Sidebar({ activeDocId, docs, onDocSelect, handlePdfText }) {
   };
 
   return (
-    <div className="w-[400px] dark:bg-PrimaryGrayDark bg-TertiaryWhite overflow-hidden">
+    <div className="w-[400px] h-[100vh] dark:bg-PrimaryGrayDark bg-TertiaryWhite overflow-hidden">
       <div className="p-4">
         <div className="flex items-center space-x-2">
           <h1 className="dark:text-gray-200 text-DarkBlue font-semibold">
