@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Sidebar } from "../notebooksidebar/notebooksidebar";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import debounce from "lodash.debounce";
 
 const NoteBookMain = () => {
@@ -27,6 +27,8 @@ const NoteBookMain = () => {
 
     fetchNotebook();
   }, [id]);
+
+  const navigate = useNavigate();
 
   // Debounced save function
   const saveTitle = useCallback(
@@ -69,7 +71,7 @@ const NoteBookMain = () => {
   return (
     <div className="flex w-full">
       <Sidebar />
-      <div className="bg-PrimaryBlack w-full p-6">
+      <div className="bg-PrimaryBlack w-[60%] p-6">
         <input
           type="text"
           value={title}
@@ -81,14 +83,20 @@ const NoteBookMain = () => {
           {isSaving ? "Saving..." : savedText}
         </div>
         <div>
-        {data?.segments && data?.segments > 0 ? (
-            <div>
-            {data.segments.map((segment) => (
-              <div key={segment.id} className="bg-PrimaryGrayDark p-4">
-                <h1 className="text-lg text-gray-200 font-semibold">
-                  {segment.title}
-                </h1>
-                <p className="text-gray-400">{segment.content}</p>
+        {data?.segments && data?.segments?.length > 0 ? (
+            <div className="flex flex-col gap-5">
+            {data?.segments?.map((segment) => (
+              <div key={segment.id} className="bg-PrimaryGrayDark p-4 flex justify-between items-center">
+                <pre className="text-sm text-gray-200 ">
+                  {segment.notes}
+                </pre>
+                {segment.link && (
+                   <p className="bg-PrimaryGrayLighter px-3 py-2 rounded-xl text-PrimaryLight" onClick={()=>{
+                     navigate(segment.link);
+                   }}>
+                    View Analysis
+                   </p>
+                )}
               </div>
             ))}
           </div>

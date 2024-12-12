@@ -6,27 +6,39 @@ import { User, MessageCircle, Upload, NotebookPen } from "lucide-react";
 import { useEffect, useState } from "react";
 import AuthAxios from "../../utils/authaxios";
 import toast from "react-hot-toast";
-import {ToggleRight, ToggleLeft} from 'lucide-react';
-
+import { MoonIcon, SunIcon } from "lucide-react";
 
 const MainSideBar = () => {
   const location = useLocation();
-  const [active, setActive] = useState(location.pathname);
-
-  const [mode, setMode] = useState(localStorage.getItem("mode") || "light");
-
-  useEffect(() => {
-    setActive(location.pathname);
-    console.log(location.pathname);
-  }, [location.pathname]);
-
   const router = useNavigate();
 
- 
+  // Initialize dark mode state from localStorage
+  const [dark, setDark] = useState(() => {
+    const savedTheme = localStorage.getItem("theme");
+    return savedTheme === "dark";
+  });
+
+  // Effect to apply theme on component mount and when dark state changes
+  useEffect(() => {
+    if (dark) {
+      document.body.classList.remove("light");
+      document.body.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.body.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [dark]);
+
+  // Theme toggle handler
+  const darkModeHandler = () => {
+    setDark(prevDark => !prevDark);
+  };
+
   const isActive = (path) => location.pathname.startsWith(path);
 
   return (
-    <div className={styles.main}>
+    <div className="min-w-[70px] dark:bg-PrimaryBlack bg-DarkBlue flex flex-col items-center py-4 justify-between">
       <div>
         <img
           src={logo}
@@ -80,8 +92,6 @@ const MainSideBar = () => {
             />
           </div>
 
-
-
           {/* Notebook */}
           <div
             className={`${styles.logoDiv} ${
@@ -98,19 +108,12 @@ const MainSideBar = () => {
           </div>
         </div>
       </div>
-      <div>
-
-            <div>
-              {
-                mode === "dark" ? <ToggleRight size={30} color="white" onClick={async () => {
-                  await localStorage.setItem("mode", "light");
-                  setMode("light");
-                }} /> : <ToggleLeft size={30} color="white" onClick={async () => {
-                  await localStorage.setItem("mode", "dark");
-                  setMode("dark");
-                }} />
-              }
-            </div>
+      <div className="flex flex-col gap-5">
+        <div className="text-white">
+          <button onClick={darkModeHandler}>
+            {dark ? <MoonIcon /> : <SunIcon />}
+          </button>
+        </div>
 
         <div
           onClick={async () => {

@@ -28,6 +28,8 @@ export function Sidebar({ activeNotebookId, notebooks, onNotebookSelect }) {
       .then((response) => response.json())
       .then((data) => {
         setNotebooks([...notebooks, data.data]);
+        console.log(data.data);
+       
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -50,6 +52,9 @@ export function Sidebar({ activeNotebookId, notebooks, onNotebookSelect }) {
       .then((data) => {
         console.log(data.data);
         setNotebooks(data.data);
+        if(data.data.length > 0 && !id)
+          navigate(data.data[0].notebookId);
+        
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -57,10 +62,10 @@ export function Sidebar({ activeNotebookId, notebooks, onNotebookSelect }) {
   }, []);
 
   return (
-    <div className="w-[350px] bg-PrimaryGrayDark h-screen flex flex-col">
+    <div className="w-[400px] dark:bg-PrimaryGrayDark bg-TertiaryWhite h-screen flex flex-col">
       <div className="p-4">
         <div className="flex items-center space-x-2">
-          <h1 className="text-gray-200 font-semibold">Your Notebooks</h1>
+          <h1 className="dark:text-gray-200 text-DarkBlue font-semibold">Your Notebooks</h1>
         </div>
       </div>
 
@@ -87,7 +92,7 @@ export function Sidebar({ activeNotebookId, notebooks, onNotebookSelect }) {
  
       </div>
 
-      <button className="p-4 text-gray-400 hover:text-gray-200 transition-colors">
+      <button className="p-4 dark:text-gray-400 dark:hover:text-gray-200 text-slate-500 hover:text-slate-700 transition-colors">
         <svg
           className="w-6 h-6"
           fill="none"

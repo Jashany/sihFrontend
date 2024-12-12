@@ -6,8 +6,8 @@ export function ChatListItem({ title, subtitle, isActive, onClick, onDelete }) {
       onClick={onClick}
       className={`relative w-[95%] text-left pb-2 px-4 pt-3 transition-colors rounded-xl ${
         isActive
-          ? "bg-PrimaryGrayHover hover:bg-PrimaryGrayLight"
-          : "bg-PrimaryGrayDark hover:bg-PrimaryGrayLight"
+          ? "dark:bg-PrimaryGrayHover bg-PrimaryWhite hover:bg-SecondaryWhite dark:hover:bg-PrimaryGrayLight"
+          : "dark:bg-PrimaryGrayDark bg-PrimaryWhite hover:bg-SecondaryWhite dark:hover:bg-PrimaryGrayLight"
       }`}
     >
 
@@ -25,7 +25,7 @@ export function ChatListItem({ title, subtitle, isActive, onClick, onDelete }) {
         )
       }
       
-      <h3 className="text-white font-medium truncate">{title}</h3>
+      <h3 className="dark:text-white text-black font-medium truncate">{title}</h3>
       <p
         className={`text-sm pt-1 truncate ${
           isActive ? "text-white" : "text-PrimaryGrayTextLight"

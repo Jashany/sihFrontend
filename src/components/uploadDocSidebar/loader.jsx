@@ -27,10 +27,10 @@ const Loader = ({ loadingStageTime }) => {
 
   return (
     <div className="flex flex-col h-screen w-full">
-      <div className="flex flex-col m-auto bg-PrimaryGrayDark px-20 py-10 w-1/2 items-center rounded-2xl">
+      <div className="flex flex-col m-auto dark:bg-PrimaryGrayDark bg-TertiaryWhite px-20 py-10 w-1/2 items-center rounded-2xl">
         <div className="flex flex-col items-center">
           <img src={ai} width={50} height={50} alt="Generating" />
-          <h1 className="text-4xl">Generating Summary</h1>
+          <h1 className="text-xl">Generating Summary</h1>
         </div>
         <div>
           <div className="flex gap-16 mt-5">
@@ -46,11 +46,11 @@ const Loader = ({ loadingStageTime }) => {
 
 const LoaderBar = ({ title, progress }) => (
   <div className="flex flex-col w-36">
-    <p className="text-PrimaryGrayTextLight text-center">{title}</p>
+    <p className="dark:text-PrimaryGrayTextLight text-DarkBlue text-center">{title}</p>
     <div className="flex items-center mt-1">
       <div
         className={`w-5 h-5 rounded-full ${
-          progress > 0 ? "bg-PrimaryBlue" : "bg-PrimaryGrayLight"
+          progress > 0 ? "bg-PrimaryBlue" : "dark:bg-PrimaryGrayLight bg-TertiaryWhite"
         }`}
       ></div>
       <div className="w-5/6 h-1 -ml-1 rounded-full overflow-hidden">
