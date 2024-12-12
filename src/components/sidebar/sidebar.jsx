@@ -11,7 +11,7 @@ export function Sidebar({
   createNewChat,
 }) {
   return (
-    <div className="w-[350px] dark:bg-PrimaryGrayDark bg-TertiaryWhite h-screen flex flex-col">
+    <div className="min-w-[400px] w-[400px] dark:bg-PrimaryGrayDark bg-TertiaryWhite h-screen flex flex-col">
       {/* Header Section */}
       <div className="p-4">
         <div className="flex items-center space-x-2">
@@ -36,7 +36,7 @@ export function Sidebar({
           <img src={chat} alt="Chats Icon" />
           Recent Chats
         </h1>
-        <div className="overflow-y-auto h-[92%] scrollbar-thin scrollbar-thumb-PrimaryGrayDark scrollbar-track-PrimaryGrayLight">
+        <div className="overflow-y-auto h-[92%] flex flex-col gap-3  scrollbar-thin scrollbar-thumb-PrimaryGrayDark scrollbar-track-PrimaryGrayLight">
           {chats && chats.length > 0 ? (
             chats.map((chat) => {
               const firstMessage = chat.chatHistory?.[0]?.user || "New Chat...";

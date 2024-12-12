@@ -62,7 +62,7 @@ export function Sidebar({ activeNotebookId, notebooks, onNotebookSelect }) {
   }, []);
 
   return (
-    <div className="w-96 dark:bg-PrimaryGrayDark bg-TertiaryWhite h-screen flex flex-col">
+    <div className="w-[400px] dark:bg-PrimaryGrayDark bg-TertiaryWhite h-screen flex flex-col">
       <div className="p-4">
         <div className="flex items-center space-x-2">
           <h1 className="dark:text-gray-200 text-DarkBlue font-semibold">Your Notebooks</h1>
