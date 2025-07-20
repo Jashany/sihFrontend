@@ -54,8 +54,8 @@ export default function RegisterPage() {
         toast.error("Registration failed. Please try again.");
       }
     } catch (err) {
-      setError("Registration failed. Please try again.");
-      console.error("Registration error:", err);
+      setError("Registration failed." + err.response.data.message);
+      console.error("Registration error:", err.response.data.message);
     }
   };
 

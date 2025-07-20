@@ -10,23 +10,23 @@ import axios from 'axios';
 export const translateToEnglishV2 = async (text, apiKey) => {
   const endpoint = `https://translation.googleapis.com/language/translate/v2`;
 
-  try {
+  // try {
     // Make the request to translate to English
-    const response = await axios.get(endpoint, {
-      params: {
-        q: text,
-        target: 'en', // Translate to English
-        key: 'AIzaSyCTxPR4C6-5HNRhvRG5k4dCF-gCRlm72Vc',
-      },
-    });
+    // const response = await axios.get(endpoint, {
+    //   params: {
+    //     q: text,
+    //     target: 'en', // Translate to English
+    //     key: 'AIzaSyCTxPR4C6-5HNRhvRG5k4dCF-gCRlm72Vc',
+    //   },
+    // });
 
-    const translatedText = response.data.data.translations[0].translatedText;
-    console.log(`Translated Text: ${translatedText}`);
-    return translatedText;
-  } catch (error) {
-    console.error('Error translating text:', error.response || error.message);
-    throw new Error('Failed to translate text.');
-  }
+    // const translatedText = response.data.data.translations[0].translatedText;
+    // console.log(`Translated Text: ${translatedText}`);
+    return text;
+  // } catch (error) {
+  //   console.error('Error translating text:', error.response || error.message);
+  //   throw new Error('Failed to translate text.');
+  // }
 };
 
     
@@ -73,35 +73,30 @@ export const translateToEnglishV2 = async (text, apiKey) => {
 //   ne : "Nepali",
 //   bh : "Bhojpuri",
 
-  try {
     // Retrieve the selected language name from localStorage, or default to 'Hindi'
-    const selectedLanguage = localStorage.getItem("targetLanguage") || "Hindi"; // Default to Hindi if no language is selected
+    // const selectedLanguage = localStorage.getItem("targetLanguage") || "Hindi"; // Default to Hindi if no language is selected
     
-    // Map the language name to its code
-    const languageCode = languageOptions[selectedLanguage];
-    console.log(`Selected Language: ${selectedLanguage}, Code: ${languageCode}`);
+    // // Map the language name to its code
+    // const languageCode = languageOptions[selectedLanguage];
+    // console.log(`Selected Language: ${selectedLanguage}, Code: ${languageCode}`);
     
-    if (!languageCode) {
-      console.log(`Unsupported language: ${selectedLanguage}. Defaulting to Hindi.`);
-      // Default to Hindi if no valid language found
-      languageCode = "hi";
-    }
+    // if (!languageCode) {
+    //   console.log(`Unsupported language: ${selectedLanguage}. Defaulting to Hindi.`);
+    //   // Default to Hindi if no valid language found
+    //   languageCode = "hi";
+    // }
 
-    // Make the request to translate the text
-    const response = await axios.get(endpoint, {
-      params: {
-        q: text,             // Input text
-        target: languageCode, // Target language code
-        key: "AIzaSyCTxPR4C6-5HNRhvRG5k4dCF-gCRlm72Vc",         // Your API key
-      },
-    });
+    // // Make the request to translate the text
+    // const response = await axios.get(endpoint, {
+    //   params: {
+    //     q: text,             // Input text
+    //     target: languageCode, // Target language code
+    //     key: "AIzaSyCTxPR4C6-5HNRhvRG5k4dCF-gCRlm72Vc",         // Your API key
+    //   },
+    // });
 
     // Extract and return translated text
-    const translatedText = response.data.data.translations[0].translatedText;
-    console.log(`Translated Text: ${translatedText}`);
-    return translatedText;
-  } catch (error) {
-    console.error('Error translating text:', error.response || error.message);
-    throw new Error('Failed to translate text.');
-  }
+    // const translatedText = response.data.data.translations[0].translatedText;
+    return text;
+
 };
