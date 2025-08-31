@@ -70,13 +70,16 @@ const NoteBookMain = () => {
 
   return (
     <div className="flex w-full">
+      <div>
+      <div className="h-[70px] absolute top-0 w-full"></div>
+      </div>
       <Sidebar />
-      <div className="dark:bg-PrimaryBlack bg-PrimayWhite w-[60%] p-6">
+      <div className="dark:bg-PrimaryBlack bg-PrimayWhite w-full md:w-[60%] lg:mt-0 mt-[70px] p-3 md:p-6">
         <input
           type="text"
           value={title}
           onChange={handleTitleChange}
-          className="text-2xl font-bold bg-transparent dark:text-gray-200 text-PrimaryBlack border-none outline-none w-full"
+          className="text-xl md:text-2xl font-bold bg-transparent dark:text-gray-200 text-PrimaryBlack border-none outline-none w-full"
           placeholder="Enter notebook title..."
         />
         <div className="text-sm text-gray-400 mt-2">
@@ -84,14 +87,14 @@ const NoteBookMain = () => {
         </div>
         <div>
         {data?.segments && data?.segments?.length > 0 ? (
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-3 md:gap-5">
             {data?.segments?.map((segment) => (
-              <div key={segment.id} className="dark:bg-PrimaryGrayDark bg-TertiaryWhite p-4 flex justify-between items-center">
-                <pre className="text-sm dark:text-gray-200 text-PrimaryGrayDark">
+              <div key={segment.id} className="dark:bg-PrimaryGrayDark bg-TertiaryWhite p-3 md:p-4 flex flex-col md:flex-row gap-3 md:gap-0 md:justify-between md:items-center">
+                <pre className="text-sm dark:text-gray-200 text-PrimaryGrayDark whitespace-pre-wrap break-words">
                   {segment.notes}
                 </pre>
                 {segment.link && (
-                   <p className="dark:bg-PrimaryGrayLighter bg-PrimaryWhite px-3 py-2 rounded-xl dark:text-PrimaryLight text-PrimaryBlack" onClick={()=>{
+                   <p className="dark:bg-PrimaryGrayLighter bg-PrimaryWhite px-3 py-2 rounded-xl dark:text-PrimaryLight text-PrimaryBlack cursor-pointer text-sm md:text-base whitespace-nowrap md:ml-4" onClick={()=>{
                      navigate(segment.link);
                    }}>
                     View Analysis

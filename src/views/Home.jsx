@@ -9,6 +9,7 @@ import Loader from "../components/loader";
 import { v4 as uuidv4 } from "uuid";
 import { translateToEnglishV2 } from "../services/LanguageEnglish";
 
+
 export default function Home() {
   const [showSource, setShowSource] = useState(null);
   const [chats, setChats] = useState(null);
@@ -24,47 +25,96 @@ export default function Home() {
 
   const { id } = useParams(); // Chat ID from URL params
 
-  // Handle Send Message
-  const handleSend = async (message) => {
-    //handle google Translation to english if language is not english
-    // try {
-    //   message = await translateToEnglishV2(
-    //     message,
-    //     REACT_APP_GOOGLE_TRANSLATE_API_KEY,
-    //   );
-    // } catch (error) {
-    //   toast.error("Failed to translate message to English");
-    //   return;
-    // }
+const handleSend = async (message) => {
+    // 1. Optimistic UI update for the user's message
+    const userMessage = { user: message, ai: null, timestamp: new Date().toISOString() };
+    
+    // 2. Create a placeholder for the AI's response that we will update
+    const aiPlaceholder = {
+      user: null,
+      ai: { text: "", sources: [] },
+      isStreaming: true, // A flag to indicate this message is being streamed
+      timestamp: new Date().toISOString(),
+    };
 
-    console.log("Message to send:", message);
-    const newMessage = { user: message, ai: null };
-    setMessages((prev) => [...(prev || []), newMessage]); // Optimistic update
-    setLoading(true);
+    setMessages((prev) => [...(prev || []), userMessage, aiPlaceholder]);
+
     try {
-      const res = await AuthAxios.post(`/chat/update-chat/${id}`, {
-        userMessage: message,
+      // 3. Use fetch to make the streaming request
+      const token = localStorage.getItem("token"); // Or wherever you store your auth token
+      const response = await fetch(`http://localhost:3000/api/chat/update-chat/${id}`, { // Make sure API path is correct
+        method: 'POST',
+        credentials: 'include', // Include cookies if needed
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Manually add auth header
+        },
+        body: JSON.stringify({ userMessage: message }),
       });
-      fetchChats();
-      const data = res.data;
-      if (data.success) {
-        setActiveChat(data.data);
-        setMessages(data.data.chatHistory);
-      } else {
-        toast.error("Failed to send message");
-        setMessages((prev) => prev?.slice(0, -1)); // Remove optimistic message
+
+      if (!response.ok || !response.body) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+      
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      // 4. Process the stream
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break; // Stream finished
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop(); // Keep the last, possibly incomplete, line
+
+        for (const line of lines) {
+          if (line.startsWith('event: sources')) {
+            const data = JSON.parse(line.split('data: ')[1]);
+            setMessages((prev) =>
+              prev.map((msg, index) =>
+                index === prev.length - 1 ? { ...msg, ai: { ...msg.ai, sources: data } } : msg
+              )
+            );
+          } else if (line.startsWith('event: chunk')) {
+            const chunk = JSON.parse(line.split('data: ')[1]);
+            setMessages((prev) =>
+              prev.map((msg, index) =>
+                index === prev.length - 1 ? { ...msg, ai: { ...msg.ai, text: msg.ai.text + chunk } } : msg
+              )
+            );
+          }
+        }
       }
     } catch (err) {
-      toast.error("An error occurred while sending the message");
-      setMessages((prev) => prev?.slice(0, -1)); // Remove optimistic message
+      console.error("Streaming failed:", err);
+      toast.error("An error occurred while getting the response.");
+       // Update the placeholder to show an error
+       setMessages((prev) =>
+        prev.map((msg, index) =>
+          index === prev.length - 1 ? { ...msg, ai: { ...msg.ai, text: "Sorry, something went wrong." }, isStreaming: false } : msg
+        )
+      );
     } finally {
-      setLoading(false);
+        // 5. Finalize the message and refresh chat list
+        setMessages((prev) =>
+            prev.map((msg, index) =>
+            index === prev.length - 1 ? { ...msg, isStreaming: false } : msg
+            )
+        );
+        // We no longer need to manually fetch chats here, as the optimistic UI update is sufficient for the sidebar.
+        // If you need a full refresh for other reasons, you can re-enable this.
+        // fetchChats();
     }
   };
 
   // Fetch Chat Details
   const fetchActiveChat = async (chatId) => {
     if (!chatId) return;
+    setLoading(true); // Show loader when switching chats
     setActiveChat(null); // Clear previous chat
     setMessages(null);
     try {
@@ -75,28 +125,11 @@ export default function Home() {
         setMessages(data.data.chatHistory || []);
       } else {
         toast.error("Failed to fetch chat details");
+        navigate("/chat"); // Navigate away if chat fails to load
       }
     } catch (err) {
       toast.error("An error occurred while fetching the chat");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch All Chats
-  const fetchChats = async () => {
-    setLoading(true);
-    try {
-      const res = await AuthAxios.get("/chat");
-      const data = res.data;
-      if (data.success) {
-        setChats(data.data);
-        setFilteredChats(data.data); // Initialize filtered chats
-      } else {
-        toast.error("Failed to fetch chats");
-      }
-    } catch (err) {
-      toast.error("An error occurred while fetching chats");
+      navigate("/chat"); // Navigate away if chat fails to load
     } finally {
       setLoading(false);
     }
@@ -104,21 +137,9 @@ export default function Home() {
 
   // Create New Chat
   const createChat = async () => {
-    const newChatId = await uuidv4(); // Generate a new UUID
-    const newChat = {
-      chatId: newChatId,
-      title: `New Chat ${newChatId.substring(0, 5)}`,
-      subtitle: "This is a new chat",
-    };
-
-    setChats((prevChats) => {
-      const updatedChats = [...prevChats, newChat];
-      setFilteredChats(updatedChats); // Update filtered chats as well
-      return updatedChats;
-    });
-
-    setActiveId(newChatId); // Set it as active
-    navigate(`/${newChatId}`);
+    // Note: This is an optimistic creation. The chat isn't saved to the DB until the first message.
+    const newChatId = uuidv4();
+    navigate(`/chat/${newChatId}`);
   };
 
   // Filter Chats Based on Search
@@ -140,8 +161,6 @@ export default function Home() {
     setFilteredChats(filtered);
   };
   
-  
-
   // Fetch active chat when ID changes
   useEffect(() => {
     if (id) {
@@ -150,39 +169,80 @@ export default function Home() {
     }
   }, [id]);
 
-  // Fetch all chats once
+  // Initial load effect
   useEffect(() => {
-    fetchChats();
-  }, []);
+    const initialize = async () => {
+      if (!localStorage.getItem("user")) {
+        navigate("/login");
+        return;
+      }
+      
+      setLoading(true);
+      try {
+        const res = await AuthAxios.get("/chat");
+        const data = res.data;
+        if (data.success) {
+          const allChats = data.data;
+          setChats(allChats);
+          setFilteredChats(allChats);
+
+          // --- NEW LOGIC ---
+          // If the user lands on the page without a specific chat ID...
+          if (!id) {
+            // ...and they have existing chats, redirect them to the first one.
+            if (allChats && allChats.length > 0) {
+              navigate(`/chat/${allChats[0].chatId}`, { replace: true });
+            } else {
+              // ...and they have NO existing chats, create a new one for them.
+              createChat();
+            }
+          }
+          // --- END NEW LOGIC ---
+
+        } else {
+          toast.error("Failed to fetch chats");
+        }
+      } catch (err) {
+        toast.error("An error occurred while fetching chats");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    initialize();
+  }, []); // Run only once on initial mount
 
   return (
-    <>
+    // The parent div needs to be `flex` to lay out sidebar and chat area side-by-side
+    <div className="flex h-screen w-full">
       <Sidebar
-        chats={filteredChats} // Use filtered chats
+        chats={filteredChats}
         activeChatId={activeId}
-        createNewChat={createChat} // Pass createChat to Sidebar
-        onSearch={handleSearch} // Pass handleSearch to Sidebar
-        onChatSelect={(chatId) => navigate(`/${chatId}`)} // Update active chat on selection
+        createNewChat={createChat}
+        onSearch={handleSearch}
+        onChatSelect={(chatId) => navigate(`/chat/${chatId}`)}
       />
-      <div className="flex dark:bg-PrimaryBlack dark:text-gray-200 bg-PrimaryWhite text-black h-screen w-full">
-        {activeChat && (
+      {/* The main content area */}
+      <div className="flex-1 dark:bg-PrimaryBlack dark:text-gray-200 bg-PrimaryWhite text-black h-screen">
+        {activeChat ? (
           <ChatArea
-            messages={messages} // Use messages state here
+            messages={messages}
             onSend={handleSend}
             handleStateChange={(newState) =>
-              navigate(`/${id}/source/${newState}`)
+              navigate(`/chat/${id}/source/${newState}`)
             }
           />
+        ) : (
+          // You can show a loading state or a "Select a chat" message here
+          !loading && <div className="flex items-center justify-center h-full">Select or create a new chat to begin.</div>
         )}
 
         {loading && (
-          <div className="fixed inset-0 z-50 bg-black bg-opacity-20 flex justify-center items-center">
-            <div className="relative">
-              <Loader />
-            </div>
+          <div className="absolute inset-0 z-50 bg-black bg-opacity-20 flex justify-center items-center">
+            <Loader />
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

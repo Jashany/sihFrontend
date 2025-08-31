@@ -21,28 +21,28 @@ const MainHome = ({setContrast}) => {
   return (
     <>
       <nav className="flex items-center flex-evenly justify-around py-4 drop-shadow-md bg-[#F4F6FC]/95 sticky top-0 z-10">
-        <img src={MainLogo} />
-        <div className="flex gap-16">
+        <img src={MainLogo} className="h-10 lg:h-12" />
+        <div className="gap-16 hidden lg:flex xl:flex 2xl:flex">
           <a href="#home">Home</a>
           <a href="#features">Features</a>
           <a href="#footer">Contact</a>
         </div>
         <div className="flex gap-10 items-center">
-          <button onClick={handleLogin}>Login</button>
+          <button onClick={handleLogin} className="hidden lg:block">Login</button>
           <Button showIcon={false} />
-          <AccessibilityButton setIsContrast={setContrast} />
+          <AccessibilityButton setIsContrast={setContrast}  />
         </div>
       </nav>
       <main className="bg-[#F4F6FC] w-full min-h-full pb-14">
         {/* <img src={bgLine} className="absolute -z-10" /> */}
 
-        <div className="flex flex-col items-center" id="home">
-          <h1 className="mt-16 text-7xl font-semibold text-[#0E1A45] text-center">
+        <div className="flex flex-col items-center " id="home">
+          <h1 className="mt-16 lg:text-7xl text-2xl font-semibold text-[#0E1A45] text-center">
             Meet Your Intelligent
             <br />
             ReSearch Engine
           </h1>
-          <p className="mt-10 text-center leading-7 text-lg text-slate-600">
+          <p className="mt-10 text-center leading-7 lg:text-lg text-md text-slate-600">
             The AI-powered workspace to help you read,
             <br />
             write, and organize research with ease.
@@ -53,42 +53,42 @@ const MainHome = ({setContrast}) => {
 
         <img
           src={noteBox}
-          className="absolute top-0 right-0 -translate-x-72 translate-y-52"
+          className="hidden absolute top-0 right-0 -translate-x-72 translate-y-52 lg:block xl:block 2xl:block"
         />
         <img
           src={textBox}
-          className="absolute top-0 right-0 -translate-x-96 translate-y-96"
+          className="absolute top-0 right-0 -translate-x-96 translate-y-96 hidden lg:block xl:block 2xl:block"
         />
         <img
           src={uploadBox}
-          className="absolute top-0 left-0 translate-x-96 translate-y-96"
+          className="absolute top-0 left-0 translate-x-96 translate-y-96 hidden lg:block xl:block 2xl:block"
         />
         <img
           src={chatBox}
-          className="absolute top-0 left-0 translate-x-64 translate-y-52"
+          className="absolute top-0 left-0 translate-x-64 translate-y-52 hidden lg:block xl:block 2xl:block"
         />
       </main>
       <div className="bg-[#EEF1FC]" id="features">
         <h2 className="text-[#0E1A45] font-semibold tracking-widest text-center pt-16">
           POWERFUL FEATURES
         </h2>
-        <h1 className="mt-4 text-4xl font-semibold text-[#0E1A45] text-center">
+        <h1 className="mt-4 lg:text-4xl text-2xl font-semibold text-[#0E1A45] text-center">
           Research, Analyze and Note
         </h1>
-        <p className="mt-4 text-center leading-7 text-lg text-slate-600">
+        <p className="mt-4 text-center leading-7 lg:text-lg text-md text-slate-600">
           Get everything you need in an aesthetic,
           <br />
           analyzed and documented fashion.
         </p>
-        <img src={bentoGrid} className="mt-10 mx-auto pb-16" />
+        <img src={bentoGrid} className="mt-10 mx-auto  max-md:h-[80%] max-md:w-[95vw] pb-16" />
       </div>
 
       <footer
-        className="p-20 flex justify-center items-center bg-[#F4F6FC] gap-14"
+        className="p-20 flex flex-col lg:flex-row justify-center items-center bg-[#F4F6FC] gap-14"
         id="footer"
       >
         <img src={MainLogo} width={500} height={500} />
-        <img src={auction} />
+        <img src={auction} className="hidden lg:block" />
         <Button showIcon={true} classes="h-11" />
       </footer>
     </>

@@ -6,7 +6,7 @@ const AccessibilityButton = ({ setIsContrast, white = false }) => {
   };
 
   return (
-    <button onClick={handleClick}>
+    <button onClick={handleClick} className="hidden lg:block">
       <LucideAccessibility className={white ? "text-white" : ""} />
     </button>
   );

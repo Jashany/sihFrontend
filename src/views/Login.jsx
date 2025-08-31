@@ -16,6 +16,13 @@ export default function LoginPage() {
     return savedTheme === "dark";
   });
 
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      navigate("/chat");
+    }
+  }, []);
+
   // Effect to apply theme on component mount and when dark state changes
   useEffect(() => {
     if (dark) {
@@ -46,15 +53,20 @@ export default function LoginPage() {
       setLoading(false);
       const data = res.data;
 
+      //store some data in localstorage
+      
+      localStorage.setItem("user", JSON.stringify(data.data));
+
       if (data.success) {
         toast.success("Login successful.");
-        navigate("/");
+        navigate("/chat");
       } else {
         toast.error("Login failed. Please try again.");
       }
     } catch (err) {
+        setLoading(false);
       setError("Login failed. Please try again.");
-      console.error("Login error:", err);
+      console.error("Login error: ", err);
     }
   };
 

@@ -1,225 +1,227 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import logo from "../../assets/logoSih.svg";
-import styles from "./MainSideBar.module.css";
-import { LogOut } from "lucide-react";
-import { User, MessageCircle, Upload, NotebookPen } from "lucide-react";
 import { useEffect, useState } from "react";
-import AuthAxios from "../../utils/authaxios";
 import toast from "react-hot-toast";
-import { MoonIcon, SunIcon } from "lucide-react";
+
+// Component & Utility Imports
+import AuthAxios from "../../utils/authaxios";
 import AccessibilityButton from "../AccessibilityButton";
-import { Languages } from "lucide-react";
-const MainSideBar = ({setContrast}) => {
+import logo from "../../assets/logoSih.svg";
+
+// Icon Imports
+import {
+  LogOut,
+  User,
+  MessageCircle,
+  NotebookPen,
+  MoonIcon,
+  SunIcon,
+  Languages,
+  Menu,
+  X,
+} from "lucide-react";
+
+const MainSideBar = ({ setContrast }) => {
   const location = useLocation();
   const router = useNavigate();
-  const [showSource, setShowSource] = useState(false);
 
-  // Initialize dark mode state from localStorage
-  const [dark, setDark] = useState(() => {
-    const savedTheme = localStorage.getItem("theme");
-    return savedTheme === "dark";
-  });
+  // State for mobile menu, language dropdown, and theme
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+  const [dark, setDark] = useState(() => localStorage.getItem("theme") === "dark");
+  const [language, setLanguage] = useState(() => localStorage.getItem("targetLanguage") || "English");
 
-  // Language state from localStorage or default to 'English'
-  const [language, setLanguage] = useState(() => {
-    const savedLanguage = localStorage.getItem("targetLanguage");
-    return savedLanguage || "English"; // Default to English
-  });
-
-  // Effect to apply theme on component mount and when dark state changes
+  // Effect to apply theme class to the body
   useEffect(() => {
     if (dark) {
-      document.body.classList.remove("light");
       document.body.classList.add("dark");
+      document.body.classList.remove("light");
       localStorage.setItem("theme", "dark");
     } else {
+      document.body.classList.add("light");
       document.body.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
   }, [dark]);
 
-  // Effect to apply language change when it updates
-  useEffect(() => {
-    localStorage.setItem("targetLanguage", language);
-  }, [language]);
-
-  // Theme toggle handler
-  const darkModeHandler = () => {
-    setDark((prevDark) => !prevDark);
-  };
-
-  const isActive = (path) => location.pathname.startsWith(path);
+  // Handlers
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const darkModeHandler = () => setDark((prevDark) => !prevDark);
+  const isActive = (path) => location.pathname === path;
 
   const handleLanguageChange = (lang) => {
-    setLanguage(lang); // Update the language state
-    console.log("Language changed to:", lang);
-    
-    // Set the language in localStorage
     localStorage.setItem("targetLanguage", lang);
-
-    // Refresh the page to apply the changes
-    window.location.reload();
-    setShowSource(false); // Close the language dropdown
+    setLanguage(lang);
+    window.location.reload(); // Refresh to apply language changes globally
   };
 
+  const handleLogout = async () => {
+    try {
+      const response = await AuthAxios.get("/auth/logout");
+      if (response.data.success) {
+        localStorage.removeItem("user");
+        toast.success("Logged out successfully");
+        router("/");
+      }
+    } catch (error) {
+      toast.error("Logout failed. Please try again.");
+    }
+  };
+
+  // Language options
   const languageOptions = {
-    en: "English",
-    hi: "Hindi",
-    ta: "Tamil",
-    te: "Telugu",
-    bn: "Bengali",
-    mr: "Marathi",
-    //add more languages and short codes here
-    pu : "Punjabi",
-    gu : "Gujarati",
-    or : "Oriya",
-    as : "Assamese",
-    ka : "Kannada",
-    ma : "Malayalam",
-    ur : "Urdu",
-    sa : "Sanskrit",
-    ne : "Nepali",
-    bh : "Bhojpuri",
+    en: "English", hi: "Hindi", ta: "Tamil", te: "Telugu",
+    bn: "Bengali", mr: "Marathi", pu: "Punjabi", gu: "Gujarati",
+    or: "Oriya", as: "Assamese", ka: "Kannada", ma: "Malayalam",
+    ur: "Urdu", sa: "Sanskrit", ne: "Nepali", bh: "Bhojpuri",
   };
 
-  return (
-    <div className="min-w-[70px] dark:bg-PrimaryBlack bg-DarkBlue flex flex-col items-center py-4 justify-between">
-      <div>
-        <img
-          src={logo}
-          style={{ marginLeft: "-2px" }}
-          className={styles.logo}
-          alt=""
-        />
-        <div onClick={() => setShowSource(!showSource)}>
-          <Languages
-            size={30}
-            color="white"
-            style={{
-              marginTop: "20px",
-              marginLeft: "5px",
-            }}
-          />
-        </div>
+  // Navigation items
+  const navItems = [
+    {
+      path: "/chat",
+      icon: MessageCircle,
+      label: "Chat",
+      // A more robust active check for nested routes
+      isActive: location.pathname.startsWith("/chat") && !location.pathname.startsWith("/chat/notebook"),
+    },
+    {
+      path: "/chat/notebook",
+      icon: NotebookPen,
+      label: "Notebook",
+      isActive: location.pathname.startsWith("/chat/notebook"),
+    },
+  ];
 
-        {/* Language Dropdown */}
-        {showSource && (
-          <div className="bg-white text-black absolute p-3 mt-2 rounded-xl shadow-lg w-32 z-10">
-            <ul>
-              {Object.entries(languageOptions).map(([code, name]) => (
-                <li
-                  key={code}
-                  className="cursor-pointer py-1 px-2 hover:bg-gray-200 rounded"
-                  onClick={() => handleLanguageChange(name)} // Use language name for the selection
-                >
-                  {name}
-                </li>
-              ))}
-            </ul>
+  // Reusable UI component for sidebar content
+  const renderSidebarContent = (isMobile = false) => (
+    <div className="flex flex-col h-full">
+      {/* Top Section: Logo, Language, and Nav */}
+      <div className="flex-grow mx-auto">
+        {isMobile && (
+          <div className="flex items-center mx-auto mb-10">
+            {/* <span className="text-white text-xl font-bold hidden lg:block">Menu</span> */}
+            <button onClick={toggleMenu} className="text-white mx-auto">
+              <X size={28} />
+            </button>
           </div>
         )}
+        <img
+          src={logo}
+          onClick={() => router("/")}
+          className={`cursor-pointer ${isMobile ? 'h-10 w-10 mx-auto' : 'h-12 w-12'}`}
+          alt="Logo"
+        />
 
-        <div
-          style={{
-            marginTop: "100px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "30px",
-          }}
-        >
-          {/* Home */}
-          <div
-            className={`${styles.logoDiv} ${
-              isActive("/") && !isActive("/upload") && !isActive("/notebook")
-                ? "bg-PrimaryBlue p-1.5 rounded-xl"
-                : ""
-            }`}
-            onClick={() => {
-              router("/");
-            }}
+        {/* Language Selector */}
+        <div className="relative mt-5 flex justify-center">
+          <button
+            onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+            className="p-2 rounded-full hover:bg-white/10 transition-colors"
           >
-            <MessageCircle
-              size={27}
-              color={`${
-                isActive("/") && !isActive("/upload") && !isActive("/notebook")
-                  ? "white"
-                  : "gray"
+            <Languages size={30} color="white" />
+          </button>
+          {showLanguageDropdown && (
+            <div className={`absolute bg-white text-black p-2 mt-12 rounded-lg shadow-lg w-36 z-20 ${isMobile ? 'left-1/2 -translate-x-1/2' : 'left-full ml-3'}`}>
+              <ul className="max-h-60 overflow-y-auto">
+                {Object.values(languageOptions).map((name) => (
+                  <li
+                    key={name}
+                    className="cursor-pointer py-1.5 px-3 hover:bg-gray-200 rounded text-sm"
+                    onClick={() => handleLanguageChange(name)}
+                  >
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        {/* Navigation Links */}
+        <div className="mt-16 flex flex-col items-center gap-6">
+          {navItems.map((item) => (
+            <div
+              key={item.path}
+              className={`p-2.5 rounded-xl cursor-pointer transition-colors ${
+                item.isActive ? "bg-PrimaryBlue" : "hover:bg-PrimaryBlue/50"
               }`}
-            />
-          </div>
-
-          {/* Upload */}
-          <div
-            className={`${styles.logoDiv} ${
-              isActive("/upload") ? "bg-PrimaryBlue p-1.5 rounded-xl" : ""
-            }`}
-            onClick={() => {
-              router("/upload");
-            }}
-          >
-            <Upload
-              size={27}
-              color={`${isActive("/upload") ? "white" : "gray"}`}
-            />
-          </div>
-
-          {/* Notebook */}
-          <div
-            className={`${styles.logoDiv} ${
-              isActive("/notebook") ? "bg-PrimaryBlue p-1.5 rounded-xl" : ""
-            }`}
-            onClick={() => {
-              router("/notebook");
-            }}
-          >
-            <NotebookPen
-              size={27}
-              color={`${isActive("/notebook") ? "white" : "gray"}`}
-            />
-          </div>
+              onClick={() => {
+                router(item.path);
+                if (isMobile) toggleMenu();
+              }}
+              title={item.label}
+            >
+              <item.icon size={27} color={item.isActive ? "white" : "gray"} />
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="flex flex-col gap-5">
-        <div className="text-white">
-          <button onClick={darkModeHandler}>
-            {dark ? <MoonIcon /> : <SunIcon />}
-          </button>
-        </div>
+      {/* Bottom Section: Actions */}
+      <div className="flex flex-col items-center gap-5">
+        <button
+          onClick={darkModeHandler}
+          className="text-white p-2 rounded-full hover:bg-white/10"
+          title={dark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        >
+          {dark ? <SunIcon size={24} /> : <MoonIcon size={24} />}
+        </button>
 
-        <div>
-          <AccessibilityButton setIsContrast={setContrast} white={true} />
-        </div>
+        <AccessibilityButton setIsContrast={setContrast} white={true} />
+
+        <button
+          onClick={handleLogout}
+          className="text-white p-2 rounded-full hover:bg-red-500/50"
+          title="Logout"
+        >
+          <LogOut size={28} />
+        </button>
 
         <div
-          onClick={async () => {
-            const response = await AuthAxios.get("/auth/logout");
-            const data = response.data;
-            if (data.success) {
-              toast.success("Logged out successfully");
-              router("/landing");
-            }
-          }}
+          className="h-[30px] w-[30px] rounded-full bg-orange-500 flex justify-center items-center"
+          title="User Profile"
         >
-          <LogOut size={30} color="white" />
-        </div>
-        <div
-          style={{
-            height: "30px",
-            width: "30px",
-            borderRadius: "50%",
-            backgroundColor: "#FFA500",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <User size={25} color="white" />
+          <User size={20} color="white" />
         </div>
       </div>
     </div>
+  );
+
+  return (
+    <>
+      {/* --- Hamburger Button for Mobile --- */}
+      <button
+        onClick={toggleMenu}
+        className="lg:hidden fixed top-4 left-4 z-40 p-2 bg-DarkBlue/80 dark:bg-PrimaryBlack/80 text-white  rounded-full backdrop-blur-sm"
+        aria-label="Open menu"
+      >
+        <Menu size={28} />
+      </button>
+
+      {/* --- Mobile Slide-Out Menu --- */}
+      <div
+        className={`fixed inset-0 z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
+          isMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {/* Backdrop */}
+        <div
+          className="absolute inset-0"
+          onClick={toggleMenu}
+        ></div>
+        {/* Menu Panel */}
+        <div className="relative w-fit h-full bg-DarkBlue dark:bg-PrimaryBlack py-6 px-4">
+          {renderSidebarContent(true)}
+        </div>
+      </div>
+
+      {/* --- Desktop Sidebar --- */}
+      <div className="hidden lg:flex min-w-[70px] dark:bg-PrimaryBlack bg-DarkBlue py-4">
+        <div className="w-full">
+          {renderSidebarContent(false)}
+        </div>
+      </div>
+    </>
   );
 };
 

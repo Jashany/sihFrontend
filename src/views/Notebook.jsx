@@ -11,7 +11,7 @@ const NotebookPage = () => {
     
   const onNotebookSelect = (id) => {
     setActiveNotebookId(id);
-    navigate(`/notebook/${id}`);
+    navigate(`/chat/notebook/${id}`);
   }
 
   const SetActiveNotebooks = (notebook) => {

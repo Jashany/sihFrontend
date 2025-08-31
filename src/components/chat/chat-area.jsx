@@ -2,111 +2,139 @@ import { ChatInput } from "./chat-input";
 import { UserMessage } from "./user-message";
 import chatTriangler from "../../assets/svgs/chat-triangle.svg";
 import logo from "../../assets/logoSih.svg";
-import { useState,useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { translateToLanguage } from "../../services/LanguageEnglish";
 import TextToSpeech from "../../utils/TextToSpeech";
 
+// Main Component that orchestrates the chat display
+export function ChatArea({ messages, onSend, handleStateChange }) {
+  const messagesEndRef = useRef(null);
 
-export function ChatArea({ messages, onSend ,handleStateChange}) {
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
   return (
-    <div className="flex-1 flex flex-col h-screen ">
-      <div className="flex-1 overflow-y-auto p-7 space-y-6">
+    <div className="flex-1 relative flex flex-col h-screen">
+      <div className="h-[70px] absolute top-0 w-full bg-"></div>
+      {/* Responsive Padding: Reduced padding on mobile (p-4) and increased on larger screens (sm:p-7) */}
+      {/* Responsive Spacing: Reduced space between messages on mobile (space-y-4) */}
+      <div className="flex-1 overflow-y-auto p-4 mt-[70px] lg:mt-0 sm:p-7 space-y-4 sm:space-y-6 ">
         {messages &&
           messages.length > 0 &&
-          messages.map((message) => (
-            
-            <div>
+          messages.map((message, index) => (
+            <div key={message.timestamp || index}> {/* Use a stable key */}
               {message.user ? (
+                // Renders the user's message
                 <UserMessage content={message.user} user={message.user} />
               ) : (
-                <Message content={message.ai.text} sources={message.ai.sources} stateChange={handleStateChange}  />
+                // Renders the AI's message
+                <Message
+                  content={message.ai.text}
+                  sources={message.ai.sources}
+                  stateChange={handleStateChange}
+                  isStreaming={message.isStreaming} // Pass the streaming flag down
+                />
               )}
             </div>
           ))}
+        {/* This div acts as a scroll target for auto-scrolling to the bottom */}
+        <div ref={messagesEndRef} />
       </div>
       <ChatInput onSend={onSend} />
     </div>
   );
 }
-function Message({ content, sources, stateChange }) {
-  const [translatedContent, setTranslatedContent] = useState(content); // To hold the translated content
-  const [loading, setLoading] = useState(false);
 
-  const sourcePath = sources[0]?.split(".")[0] || "";
-
-  // Fetch the target language from localStorage
-  const targetLang = localStorage.getItem("targetLanguage") || "hi"; // Default to English
+// Sub-component for rendering a single AI message
+function Message({ content, sources, stateChange, isStreaming }) {
+  const [translatedContent, setTranslatedContent] = useState(content);
+  const [translationLoading, setTranslationLoading] = useState(false);
+  const targetLang = localStorage.getItem("targetLanguage") || "hi"; // Default to Hindi
 
   useEffect(() => {
     const translateContent = async () => {
-      setLoading(true);
+      if (!content || content.trim() === "") return;
+      setTranslationLoading(true);
       try {
-        // Call the translation API to translate the content
         const translatedText = await translateToLanguage(content, targetLang);
-        console.log("Translated Text:", translatedText);
-        setTranslatedContent(translatedText); // Update state with translated content
+        setTranslatedContent(translatedText);
       } catch (error) {
         console.error("Error translating content:", error);
-        setTranslatedContent(content); // Fallback to original content if translation fails
+        setTranslatedContent(content); // Fallback to original content
       }
-      setLoading(false);
+      setTranslationLoading(false);
     };
 
-    if (content) {
-      translateContent(); // Trigger translation on content change
+    if (isStreaming) {
+      setTranslatedContent(content);
+      setTranslationLoading(false);
+    } else {
+      translateContent();
     }
-  }, [content, targetLang]); // Re-run the translation if content or language changes
+  }, [content, isStreaming, targetLang]);
+
+  const BlinkingCursor = () => <span className="inline-block w-2 h-5 bg-gray-700 dark:bg-gray-300 animate-pulse ml-1" aria-hidden="true"></span>;
 
   return (
-    <div className={`flex justify-start mb-4 dark:bg-PrimaryGrayDark bg-SecondaryWhite pt-4 pb-8 pr-10 pl-6 rounded-xl`}>
-      <div className="max-w-6xl flex">
-        <div className="mt-2.5 mr-1">
-          <img src={logo} alt="logo" width={120} className="bg-DarkBlue dark:bg-PrimaryGrayLight m-2 p-1 rounded-full" />
+    // Responsive Padding: Simplified padding for all screen sizes (p-4), with more specific padding for larger screens.
+    <div className={`flex justify-start mb-4 dark:bg-PrimaryGrayDark bg-SecondaryWhite p-4 sm:pt-4 sm:pb-8 sm:pr-10 sm:pl-6 rounded-xl`}>
+      <div className="max-w-6xl flex items-start">
+        {/* Responsive Logo: Hidden on mobile (hidden) to save space, visible on larger screens (sm:block) */}
+        <div className="hidden sm:block mt-2.5 mr-2">
+          <img src={logo} alt="logo" className="w-12 h-12 bg-DarkBlue dark:bg-PrimaryGrayLight p-1 rounded-full" />
         </div>
         <div className="flex space-x-3 justify-start items-center">
           <div>
-            <div className="rounded-lg px-4 py-3">
-              {sources && (
-                <div className="flex items-center gap-5">
-                  <h1 className="dark:text-PrimaryGrayTextDark text-DarkBlue">LawVista AI</h1>
-                  <div className="my-4"><TextToSpeech text={content} /></div>
-                </div>
-              )}
-              <p className="dark:text-gray-200 text-PrimaryGrayDark whitespace-pre-wrap">
-                {loading ? "Translating..." : translatedContent} {/* Show loading text or translated content */}
+            <div className="rounded-lg px-2 py-1 sm:px-4 sm:py-3">
+              <div className="flex items-center gap-3 sm:gap-5">
+                <h1 className="dark:text-PrimaryGrayTextDark text-DarkBlue text-lg font-semibold">LawVista AI</h1>
+                {!isStreaming && content && (
+                   <div className="my-2"><TextToSpeech text={content} /></div>
+                )}
+              </div>
+              
+              <p className="dark:text-gray-200 text-PrimaryGrayDark whitespace-pre-wrap mt-2">
+                {translationLoading ? "Translating..." : translatedContent}
+                {isStreaming && <BlinkingCursor />}
               </p>
             </div>
 
             {sources && sources.length > 0 && (
-              <div className="mt-4 pl-4">
+              <div className="mt-4 pl-2 sm:pl-4">
                 <h4 className="dark:text-gray-400 text-DarkBlue text-sm mb-2">Sources</h4>
-                <div className="space-y-2">
-                  {sources.map((source, index) => (
-                    <div
-                      key={index}
-                      className="dark:bg-PrimaryGrayLight bg-[#DBE4FF] rounded-xl p-3 flex justify-between items-center"
-                      onClick={() => stateChange(sourcePath)}
-                    >
-                      <div>
-                        <h5 className="dark:text-gray-200 text-PrimaryGrayDark">{source}</h5>
-                        <p className="dark:text-PrimaryGrayTextDark text-PrimaryGrayLighter text-sm">
-                          {source}
-                        </p>
-                      </div>
-                      <button
-                        onClick={source.onView}
-                        className="px-5 py-2 text-sm dark:bg-PrimaryGrayLighter bg-[#8AA6FA] text-gray-200 rounded-xl hover:bg-PrimaryGrayDark/30 transition-colors flex justify-center items-center space-x-1 gap-2"
+                <div className="space-y-3">
+                  {sources.map((source, index) => {
+                    const individualSourcePath = source.split(".")[0] || "";
+                    return (
+                      // Responsive Layout: Stacked vertically on mobile (flex-col), row on larger screens (sm:flex-row).
+                      <div
+                        key={index}
+                        className="dark:bg-PrimaryGrayLight bg-[#DBE4FF] rounded-xl p-3 flex flex-col items-start gap-3 sm:flex-row sm:justify-between sm:items-center cursor-pointer"
+                        onClick={() => stateChange(individualSourcePath)}
                       >
-                        <img
-                          src={chatTriangler}
-                          alt="chat"
-                          width={15}
-                          height={10}
-                        />
-                        View Document
-                      </button>
-                    </div>
-                  ))}
+                        <div>
+                          <h5 className="dark:text-gray-200 text-PrimaryGrayDark font-medium">{source}</h5>
+                          <p className="dark:text-PrimaryGrayTextDark text-PrimaryGrayLighter text-sm">
+                            {source}
+                          </p>
+                        </div>
+                        {/* Responsive Button: Full width on mobile (w-full) for easy tapping, auto width on larger screens (sm:w-auto). */}
+                        <div className="w-full sm:w-auto px-4 py-2 text-sm dark:bg-PrimaryGrayLighter bg-[#8AA6FA] text-gray-200 rounded-xl hover:bg-PrimaryGrayDark/30 transition-colors flex justify-center items-center gap-2">
+                          <img
+                            src={chatTriangler}
+                            alt="chat"
+                            width={15}
+                            height={10}
+                          />
+                          <span>View Document</span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -116,4 +144,3 @@ function Message({ content, sources, stateChange }) {
     </div>
   );
 }
-

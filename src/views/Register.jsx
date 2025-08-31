@@ -17,6 +17,11 @@ export default function RegisterPage() {
     return savedTheme === "dark";
   });
 
+  useEffect(() => {
+    if(localStorage.getItem("user")){
+      navigate("/chat");
+    }
+  }, []);
   // Effect to apply theme on component mount and when dark state changes
   useEffect(() => {
     if (dark) {
@@ -46,6 +51,7 @@ export default function RegisterPage() {
       const res = await AuthAxios.post("/auth/register", { name, email, password });
       setLoading(false);
       const data = res.data;
+       localStorage.setItem("user", JSON.stringify(data.data));
 
       if (data.success) {
         toast.success("Registration successful.");
@@ -54,7 +60,8 @@ export default function RegisterPage() {
         toast.error("Registration failed. Please try again.");
       }
     } catch (err) {
-      setError("Registration failed." + err.response.data.message);
+      setLoading(false);
+      setError("Registration failed. " + err.response.data.message);
       console.error("Registration error:", err.response.data.message);
     }
   };
