@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
 import MainSideBar from '../components/MainSideBar/MainSideBar';
 import NotebookWriter from '../components/notebook/NoteBookWriter';
-import AuthAxios from '../utils/authaxios';
+import AuthAxios from '../utils/Authaxios';
 
 const DashboardLayout = ({ isContrast, setIsContrast }) => {
   const navigate = useNavigate();
