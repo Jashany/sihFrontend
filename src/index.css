@@ -1,7 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 *{
   scroll-behavior: smooth;
@@ -16,6 +14,28 @@ input:focus {
   display: none;
 }
 
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* 2. Define your theme customizations */
+@theme {
+  --color-PrimaryBlack: #161616;
+  --color-PrimaryGrayDark: #1D1D1D;
+  --color-PrimaryGrayLight: #393939;
+  --color-PrimaryGrayLighter: #494949;
+  --color-PrimaryGrayTextLight: #BEBEBE;
+  --color-PrimaryGrayTextDark: #9E9E9E;
+  --color-PrimaryBlue: #509FFF;
+  --color-PrimaryGrayHover: #2E2E2E;
+  --color-PrimaryGrayIcons: #676767;
+  --color-PrimaryLight: #ffffff;
+  --color-DarkBlue: #0E1A45;
+  --color-PrimaryWhite: #F4F6FC;
+  --color-SecondaryWhite: #EEF2FD;
+  --color-TertiaryWhite: #E0E6F9;
+
+  --font-sans: Urbanist, sans-serif;
+}
 
 
 /* create global styles */
