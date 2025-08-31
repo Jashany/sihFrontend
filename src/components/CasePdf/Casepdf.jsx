@@ -28,7 +28,7 @@ const Casepdf = () => {
   useEffect(() => {
     const fetchCaseData = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/cases/${source}`);
+        const response = await fetch(`https://lawapi.jsondev.in/api/cases/${source}`);
         const data = await response.json();
         setCaseData(data);
       } catch (error) {

@@ -25,7 +25,7 @@ export function Sidebar({ activeNotebookId, notebooks, onNotebookSelect, onSearc
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/notebook/get-chats", {
+    fetch("https://lawapi.jsondev.in/api/notebook/get-chats", {
       credentials: "include",
       method: "GET",
       headers: {
@@ -43,7 +43,7 @@ export function Sidebar({ activeNotebookId, notebooks, onNotebookSelect, onSearc
   }, []);
 
   const createNotebook = () => {
-    fetch("http://localhost:3000/api/notebook/create-notebook", {
+    fetch("https://lawapi.jsondev.in/api/notebook/create-notebook", {
       credentials: "include",
       method: "POST",
       headers: {

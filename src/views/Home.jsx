@@ -42,7 +42,7 @@ const handleSend = async (message) => {
     try {
       // 3. Use fetch to make the streaming request
       const token = localStorage.getItem("token"); // Or wherever you store your auth token
-      const response = await fetch(`http://localhost:3000/api/chat/update-chat/${id}`, { // Make sure API path is correct
+      const response = await fetch(`https://lawapi.jsondev.in/api/chat/update-chat/${id}`, { // Make sure API path is correct
         method: 'POST',
         credentials: 'include', // Include cookies if needed
         headers: {

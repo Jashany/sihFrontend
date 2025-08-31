@@ -79,7 +79,7 @@ const Summary = ({ text }) => {
       // setjudgement(judgementdata);
 
       // Finally, save everything using the /api/doc/ API
-      await AuthAxios.post("http://localhost:3000/api/doc/", {
+      await AuthAxios.post("https://lawapi.jsondev.in/api/doc/", {
         documentId: newDoc.id,
         title: newDoc.title,
         summary: generatedSummary,

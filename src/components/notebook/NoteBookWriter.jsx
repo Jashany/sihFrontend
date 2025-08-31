@@ -26,7 +26,7 @@ const NotebookWriter = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/notebook/get-chats", {
+    fetch("https://lawapi.jsondev.in/api/notebook/get-chats", {
       credentials: "include",
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -38,7 +38,7 @@ const NotebookWriter = () => {
 
   const handleNotebookSelect = (notebookId) => {
     setSelectedNotebook(notebookId);
-    fetch(`http://localhost:3000/api/notebook/${notebookId}`, {
+    fetch(`https://lawapi.jsondev.in/api/notebook/${notebookId}`, {
       credentials: "include",
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -51,7 +51,7 @@ const NotebookWriter = () => {
   const handleAddProject = () => {
     const newNotebookTitle = prompt("Enter a title for the new project:");
     if (newNotebookTitle) {
-      fetch("http://localhost:3000/api/notebook/create-notebook", {
+      fetch("https://lawapi.jsondev.in/api/notebook/create-notebook", {
         credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -71,7 +71,7 @@ const NotebookWriter = () => {
 
   const saveEditedSegment = () => {
     fetch(
-      `http://localhost:3000/api/notebook/${selectedNotebook}/update-segment/${editingSegment}`,
+      `https://lawapi.jsondev.in/api/notebook/${selectedNotebook}/update-segment/${editingSegment}`,
       {
         credentials: "include",
         method: "PUT",
@@ -103,7 +103,7 @@ const NotebookWriter = () => {
 
   const saveNewSegment = () => {
     fetch(
-      `http://localhost:3000/api/notebook/${selectedNotebook}/add-segment`,
+      `https://lawapi.jsondev.in/api/notebook/${selectedNotebook}/add-segment`,
       {
         credentials: "include",
         method: "POST",
