@@ -1,6 +1,6 @@
 import autoprefixer from "autoprefixer";
 import { useState, useEffect, FormEvent } from "react";
-import AuthAxios from "../utils/authaxios";
+import AuthAxios from "../utils/Authaxios";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Loader from "../components/loader";

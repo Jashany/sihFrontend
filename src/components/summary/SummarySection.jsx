@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate, useParams } from "react-router-dom";
 import chatTriangler from "../../assets/svgs/chat-triangle.svg";
-import AuthAxios from "../../utils/authaxios";
+import AuthAxios from "../../utils/Authaxios";
 import Loader from "../uploadDocSidebar/loader";
 
 const Summary = ({ text }) => {

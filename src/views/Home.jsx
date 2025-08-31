@@ -3,7 +3,7 @@ import { Sidebar } from "../components/sidebar/sidebar";
 import { ChatArea } from "../components/chat/chat-area";
 import Casepdf from "../components/CasePdf/Casepdf";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import AuthAxios from "../utils/authaxios";
+import AuthAxios from "../utils/Authaxios";
 import toast from "react-hot-toast";
 import Loader from "../components/loader";
 import { v4 as uuidv4 } from "uuid";

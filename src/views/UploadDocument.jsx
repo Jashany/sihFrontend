@@ -3,7 +3,7 @@ import { Sidebar } from "../components/uploadDocSidebar/sidebar";
 import SummarySection from "../components/uploadDocSidebar/summary-section";
 import Loader from "../components/uploadDocSidebar/loader";
 import { v4 as uuidv4 } from "uuid";
-import AuthAxios from "../utils/authaxios";
+import AuthAxios from "../utils/Authaxios";
 import { useNavigate, useParams } from "react-router-dom";
 import chatTriangler from "../assets/svgs/chat-triangle.svg";
 import axios from "axios";

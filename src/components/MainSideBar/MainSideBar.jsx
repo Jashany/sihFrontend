@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 // Component & Utility Imports
-import AuthAxios from "../../utils/authaxios";
+import AuthAxios from "../../utils/Authaxios";
 import AccessibilityButton from "../AccessibilityButton";
 import logo from "../../assets/logoSih.svg";
 
