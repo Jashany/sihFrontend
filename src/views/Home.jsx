@@ -90,14 +90,21 @@ const handleSend = async (message) => {
         }
       }
     } catch (err) {
-      console.error("Streaming failed:", err);
-      toast.error("An error occurred while getting the response.");
-       // Update the placeholder to show an error
-       setMessages((prev) =>
+    
+      //if err.message then show that else show generic and same setMessages update
+      if (err.message) {
+        toast.error(err.message);
+      } else {
+        toast.error("An error occurred while getting the response.");
+      }
+      //show err.message in the last ai message or a generic error
+      setMessages((prev) =>
         prev.map((msg, index) =>
-          index === prev.length - 1 ? { ...msg, ai: { ...msg.ai, text: "Sorry, something went wrong." }, isStreaming: false } : msg
+          index === prev.length - 1 ? { ...msg, ai: { text: err.message || "An error occurred while getting the response.", sources: [] }, isStreaming: false } : msg
         )
       );
+
+    
     } finally {
         // 5. Finalize the message and refresh chat list
         setMessages((prev) =>

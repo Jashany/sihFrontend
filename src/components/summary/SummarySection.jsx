@@ -36,7 +36,7 @@ const Summary = ({ text }) => {
   const CallSummarizeApi = async (text) => {
     try {
       setLoading(true);
-      console.log(text);
+
 
       const startTime = Date.now(); // Record the start time
       const response = await fetch("http://127.0.0.1:8000/api/summarize/", {

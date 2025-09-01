@@ -46,7 +46,7 @@ export default function RegisterPage() {
     }
 
     try {
-      console.log("Registration data:", { name, email, password });
+    
       setLoading(true);
       const res = await AuthAxios.post("/auth/register", { name, email, password });
       setLoading(false);
