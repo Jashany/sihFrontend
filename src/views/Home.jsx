@@ -90,7 +90,7 @@ const handleSend = async (message) => {
         }
       }
     } catch (err) {
-    
+      console.error("Error during fetch:", err);
       //if err.message then show that else show generic and same setMessages update
       if (err.message) {
         toast.error(err.message);
