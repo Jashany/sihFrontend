@@ -53,8 +53,12 @@ const handleSend = async (message) => {
       });
 
       if (!response.ok || !response.body) {
+        //get the error message from response body
+        const errorData = await response.json();
+        const errorMessage = errorData.message || 'Failed to get response from server';
+        console.log("Registration successful.");
         //i have message and success in response body res.status.json , show the message
-        throw new Error(`Error: ${response.status} ${response.body.message}`);
+        throw new Error(`Error: ${response.status} ${errorMessage}`);
       }
       
       const reader = response.body.getReader();
