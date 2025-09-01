@@ -53,7 +53,8 @@ const handleSend = async (message) => {
       });
 
       if (!response.ok || !response.body) {
-        throw new Error(`Request failed with status ${response.status}`);
+        //i have message and success in response body res.status.json , show the message
+        throw new Error(`Error: ${response.status} ${response.body.message}`);
       }
       
       const reader = response.body.getReader();
